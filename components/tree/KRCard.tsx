@@ -5,7 +5,7 @@ import { useState, useTransition } from 'react';
 import { deleteKR, updateKR } from '@/app/actions';
 import { ConfidenceLight } from '@/components/ui/ConfidenceLight';
 import { OwnerChip } from '@/components/ui/OwnerChip';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import { ProgressCircle } from '@/components/ui/ProgressCircle';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TypeBadge } from '@/components/ui/TypeBadge';
 import { useToast } from '@/components/ui/Toast';
@@ -41,7 +41,6 @@ export function KRCard({
 }) {
   const status = krDisplayStatus(kr);
   const stripe = stripeColor[status];
-  const isDone = isKRAchieved(kr);
   const color = progressColor(kr.progress, kr.updated_at !== null);
 
   const [editing, setEditing] = useState(false);
@@ -79,42 +78,53 @@ export function KRCard({
             )}
           </div>
 
-          <div className="text-heading-md text-text-primary mb-4 break-words">
+          <div className="text-heading-md text-text-primary mb-4 break-words leading-snug min-h-[3.25rem]">
             {kr.target_text || <span className="text-text-muted">목표를 입력하세요</span>}
           </div>
 
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-baseline justify-between mb-1">
-                <span className="text-label-md text-text-tertiary">현재</span>
-                <span className="text-body-lg text-text-primary num">
-                  {kr.current_value || 0}
-                </span>
-              </div>
-              {kr.current_detail && (
-                <div className="text-body-sm text-text-tertiary break-words">
-                  {kr.current_detail}
-                </div>
+          {/* 원형 게이지 + 현재/목표 */}
+          <div className="flex items-center gap-4 mb-4">
+            <ProgressCircle value={kr.progress} color={color} size={84} strokeWidth={8} />
+            <div className="flex flex-col gap-1">
+              {kr.target_value !== null && kr.target_value > 0 ? (
+                <>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-heading-lg text-text-primary num">
+                      {kr.current_value}
+                    </span>
+                    <span className="text-body-md text-text-tertiary num">
+                      / {kr.target_value}
+                    </span>
+                  </div>
+                  {kr.current_detail && (
+                    <div className="text-body-sm text-text-tertiary break-words">
+                      {kr.current_detail}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="text-body-md text-text-tertiary">
+                    수동 진척도
+                  </div>
+                  {kr.current_detail && (
+                    <div className="text-body-sm text-text-tertiary break-words">
+                      {kr.current_detail}
+                    </div>
+                  )}
+                </>
               )}
             </div>
+          </div>
 
-            <div>
-              <div className="flex items-baseline justify-between mb-1.5">
-                <span className="text-label-md text-text-tertiary">진척도</span>
-                <span className="text-body-lg text-text-primary num">
-                  {Math.round(kr.progress * 100)}%
-                </span>
-              </div>
-              <ProgressBar value={kr.progress} color={color} />
-            </div>
-
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-label-md text-text-tertiary">신뢰도</span>
               <ConfidenceLight value={kr.confidence} />
             </div>
 
             {kr.owners.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap pt-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 {kr.owners.map((oid) => {
                   const m = members.find((mm) => mm.id === oid);
                   return <OwnerChip key={oid} name={m?.name ?? oid} />;
@@ -171,6 +181,9 @@ function KREditForm({
 }) {
   const [type, setType] = useState<KRType>(kr.type);
   const [targetText, setTargetText] = useState(kr.target_text);
+  const [targetValueStr, setTargetValueStr] = useState(
+    kr.target_value !== null ? String(kr.target_value) : ''
+  );
   const [currentValue, setCurrentValue] = useState(kr.current_value);
   const [currentDetail, setCurrentDetail] = useState(kr.current_detail);
   const [progressPct, setProgressPct] = useState(Math.round(kr.progress * 100));
@@ -178,6 +191,12 @@ function KREditForm({
   const [owners, setOwners] = useState<string[]>(kr.owners);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
+
+  const targetValueNum = targetValueStr === '' ? null : Number(targetValueStr);
+  const hasNumericTarget = targetValueNum !== null && !isNaN(targetValueNum) && targetValueNum > 0;
+  const autoProgress = hasNumericTarget
+    ? Math.round((Number(currentValue) / targetValueNum!) * 100)
+    : null;
 
   function toggleOwner(mid: string) {
     setOwners((prev) =>
@@ -190,9 +209,12 @@ function KREditForm({
       const r = await updateKR(qid, kr.id, {
         type,
         target_text: targetText,
+        target_value: targetValueNum,
         current_value: Number(currentValue) || 0,
         current_detail: currentDetail,
-        progress: Math.max(0, Math.min(2, progressPct / 100)),
+        progress: hasNumericTarget
+          ? Math.max(0, Math.min(2, Number(currentValue) / targetValueNum!))
+          : Math.max(0, Math.min(2, progressPct / 100)),
         confidence,
         owners,
       });
@@ -235,32 +257,33 @@ function KREditForm({
           </div>
         </Field>
 
-        <Field label="목표">
+        <Field label="목표 설명">
           <input
             type="text"
             value={targetText}
             onChange={(e) => setTargetText(e.target.value)}
-            placeholder="예) 응모·제안서 10건"
+            placeholder="예) 박람회를 통한 고객과의 후속 논의 3건"
             className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md focus:outline-none focus:border-border-strong"
           />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
+          <Field label="목표값 (숫자)">
+            <input
+              type="number"
+              value={targetValueStr}
+              onChange={(e) => setTargetValueStr(e.target.value)}
+              placeholder="예) 3 (비워두면 수동)"
+              min={0}
+              className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md num focus:outline-none focus:border-border-strong"
+            />
+          </Field>
           <Field label="현재값 (숫자)">
             <input
               type="number"
               value={currentValue}
               onChange={(e) => setCurrentValue(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md num focus:outline-none focus:border-border-strong"
-            />
-          </Field>
-          <Field label="진척도 (%)">
-            <input
-              type="number"
-              value={progressPct}
-              onChange={(e) => setProgressPct(Number(e.target.value))}
               min={0}
-              max={200}
               className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md num focus:outline-none focus:border-border-strong"
             />
           </Field>
@@ -271,9 +294,37 @@ function KREditForm({
             type="text"
             value={currentDetail}
             onChange={(e) => setCurrentDetail(e.target.value)}
-            placeholder="예) 호반, IBK-다날, SBVA"
+            placeholder="예) IBK-다날, SBVA"
             className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md focus:outline-none focus:border-border-strong"
           />
+        </Field>
+
+        <Field label="진척도">
+          {hasNumericTarget ? (
+            <div className="flex items-center gap-3 px-3 py-2 bg-bg-surface3 border border-border-default rounded-md">
+              <span className="text-body-lg text-text-primary num font-semibold">
+                {autoProgress}%
+              </span>
+              <span className="text-caption text-text-tertiary">
+                자동 계산 ({currentValue} / {targetValueNum})
+              </span>
+            </div>
+          ) : (
+            <div>
+              <input
+                type="number"
+                value={progressPct}
+                onChange={(e) => setProgressPct(Number(e.target.value))}
+                min={0}
+                max={200}
+                placeholder="0-100"
+                className="w-full px-3 py-2 bg-bg-surface3 border border-border-default rounded-md text-text-primary text-body-md num focus:outline-none focus:border-border-strong"
+              />
+              <p className="text-caption text-text-tertiary mt-1">
+                목표값이 비어있어 수동 입력합니다.
+              </p>
+            </div>
+          )}
         </Field>
 
         <Field label="신뢰도">

@@ -23,9 +23,10 @@ export interface KR {
   type: KRType;
   owners: string[];
   target_text: string;
+  target_value: number | null; // 숫자 목표 (있으면 진척도 자동 계산)
   current_value: number;
   current_detail: string;
-  progress: number;
+  progress: number; // 자동 계산값 (target_value > 0이면), 또는 수동 입력
   confidence: Confidence;
   updated_at: string | null;
 }

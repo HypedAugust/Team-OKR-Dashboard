@@ -174,7 +174,7 @@ export async function deleteObjective(qid: string, oid: string): Promise<ActionR
 export async function createKR(
   qid: string,
   oid: string,
-  input?: { type?: KRType; target_text?: string }
+  input?: { type?: KRType; target_text?: string; target_value?: number | null }
 ): Promise<ActionResult<{ kid: string }>> {
   const check = assertActive(qid);
   if (typeof check === 'string') return err(check);
@@ -190,6 +190,7 @@ export async function createKR(
       type: input?.type ?? 'Aspire',
       owners: [],
       target_text: trim(input?.target_text, TEXT_MAX_LENGTH.krTargetText),
+      target_value: input?.target_value ?? null,
       current_value: 0,
       current_detail: '',
       progress: 0,
@@ -216,6 +217,7 @@ export async function updateKR(
     type: KRType;
     owners: string[];
     target_text: string;
+    target_value: number | null;
     current_value: number;
     current_detail: string;
     progress: number;
@@ -228,6 +230,21 @@ export async function updateKR(
   const state = readState();
   const existing = state.krs[kid]?.data;
   if (!existing) return err('KR을 찾을 수 없습니다.');
+
+  // 진척도 자동 계산: target_value > 0이면 current/target, 아니면 patch.progress 또는 기존값 유지
+  const mergedTarget =
+    patch.target_value !== undefined ? patch.target_value : existing.target_value;
+  const mergedCurrent =
+    patch.current_value !== undefined ? patch.current_value : existing.current_value;
+
+  let computedProgress: number;
+  if (mergedTarget !== null && mergedTarget > 0) {
+    computedProgress = Math.max(0, Math.min(2, mergedCurrent / mergedTarget));
+  } else if (patch.progress !== undefined) {
+    computedProgress = patch.progress;
+  } else {
+    computedProgress = existing.progress;
+  }
 
   mutate((s) => ({
     ...s,
@@ -242,10 +259,12 @@ export async function updateKR(
             patch.target_text !== undefined
               ? trim(patch.target_text, TEXT_MAX_LENGTH.krTargetText)
               : existing.target_text,
+          target_value: mergedTarget,
           current_detail:
             patch.current_detail !== undefined
               ? trim(patch.current_detail, TEXT_MAX_LENGTH.currentDetail)
               : existing.current_detail,
+          progress: computedProgress,
           updated_at: new Date().toISOString(),
         },
       },
