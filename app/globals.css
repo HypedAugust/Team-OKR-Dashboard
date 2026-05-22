@@ -348,10 +348,14 @@ button {
     print-color-adjust: exact !important;
   }
 
-  /* Page setup - 가로 방향으로 정보 밀도 확보 */
+  /* Page setup — 마진을 최소화 (브라우저 헤더/푸터 영역 축소) */
   @page {
     size: A4 landscape;
-    margin: 10mm 12mm;
+    margin: 4mm 8mm;
+  }
+  /* 콘텐츠가 페이지 가장자리에 붙지 않도록 본문에 패딩 */
+  main {
+    padding: 4mm 4mm !important;
   }
 
   /* ─── 컴팩트화: 페이지 수 줄이기 ─── */
