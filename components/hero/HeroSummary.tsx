@@ -14,6 +14,7 @@ import type { KR, Member, Quarter } from '@/lib/types';
 import { HeroCard } from './HeroCard';
 import { RiskAlertChip } from './RiskAlertChip';
 import { QuarterVerdictBanner } from './QuarterVerdictBanner';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 
 export function HeroSummary({
   quarter,
@@ -48,26 +49,23 @@ export function HeroSummary({
   const riskCount = krs.filter((kr) => krDisplayStatus(kr) === 'risk').length;
 
   return (
-    <section className="hero-summary px-8">
-      {/* 섹션 헤더 — 종합 상태 배너 + 위험 알림 인라인 */}
-      <div className="flex flex-wrap items-center gap-3 mb-5 justify-between">
-        <div className="flex items-center gap-3">
-          <span className="w-1.5 h-7 bg-status-success rounded-full" />
-          <h2 className="text-heading-md text-text-primary">이번 분기 요약</h2>
-          <QuarterVerdictBanner
-            doneCount={done}
-            totalCount={total}
-            quarterProgressPct={qProgress}
-            riskCount={riskCount}
-          />
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <RiskAlertChip krs={krs} members={members} />
-          <span className="text-caption text-text-tertiary num">
-            기준 {now.toISOString().slice(0, 10)}
-          </span>
-        </div>
-      </div>
+    <section className="hero-summary px-8 pt-8">
+      <SectionHeader
+        number="01"
+        title="이번 분기 요약"
+        description="분기 전체 진척도·달성·신뢰도·페이스 한눈에"
+        right={
+          <>
+            <QuarterVerdictBanner
+              doneCount={done}
+              totalCount={total}
+              quarterProgressPct={qProgress}
+              riskCount={riskCount}
+            />
+            <RiskAlertChip krs={krs} members={members} />
+          </>
+        }
+      />
 
       {/* 4카드 — gap 20px */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">

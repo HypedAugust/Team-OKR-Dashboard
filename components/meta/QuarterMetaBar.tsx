@@ -33,6 +33,7 @@ export function QuarterMetaBar({
   const week = currentWeek(quarter.start_date, viewDate);
   const update = thisWeekUpdateRate(krs, viewDate);
   const inputValue = toInputDate(viewDate);
+  const year = quarter.start_date.slice(0, 4);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;
@@ -43,67 +44,68 @@ export function QuarterMetaBar({
   }
 
   return (
-    <div className="meta-bar px-8 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
-        <div>
-          <span className="text-label-md text-text-tertiary uppercase mb-2 block">현재 분기</span>
-          <h1 className="text-heading-xl text-text-primary num leading-none">{quarter.name}</h1>
-          <span className="text-body-sm text-text-tertiary num mt-2 block">
-            {formatDate(quarter.start_date)} ~ {formatDate(quarter.end_date)}
-          </span>
-        </div>
-
-        <div className="no-print flex items-center gap-2 bg-bg-surface2 rounded-full pl-4 pr-3 py-2">
-          <Calendar size={14} className="text-text-tertiary" />
-          <label className="text-label-md text-text-tertiary">기준 날짜</label>
+    <div className="meta-bar px-8 pt-10 pb-8 border-b border-border-subtle">
+      {/* 매거진 메타 — 한 줄 */}
+      <div className="flex items-center justify-between mb-6 text-label-md text-text-tertiary font-mono uppercase">
+        <span className="tracking-widest">
+          ISSUE №{quarter.name} · 사업전략팀 · {year}
+        </span>
+        <div className="no-print flex items-center gap-2">
+          <Calendar size={12} className="text-text-muted" />
           <input
             type="date"
             value={inputValue}
             onChange={handleChange}
-            className="bg-transparent text-body-md text-text-primary num focus:outline-none cursor-pointer"
+            className="bg-transparent text-label-md text-text-secondary num focus:outline-none cursor-pointer font-mono"
             style={{ colorScheme: 'dark' }}
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-8 gap-y-3 px-5 py-4 bg-bg-surface1 rounded-2xl border border-border-subtle">
-        <MetaItem label="경과율" value={`${progress}%`} />
-        <Divider />
-        <MetaItem label="현재 주차" value={`${week}주차`} />
-        <Divider />
-        <MetaItem label="남은 기간" value={`${weeksLeft}주`} />
-        <Divider />
-        <MetaItem
+      {/* 거대 분기명 — 매거진 헤드라인 */}
+      <div className="flex items-end justify-between gap-6 flex-wrap mb-8">
+        <h1
+          className="text-text-primary num font-serif font-black tracking-tight leading-none"
+          style={{ fontSize: 'clamp(72px, 12vw, 144px)' }}
+        >
+          {quarter.name}
+        </h1>
+        <div className="flex flex-col items-end text-right">
+          <span className="text-label-md text-text-tertiary uppercase tracking-wider mb-1">분기 기간</span>
+          <span className="text-body-lg text-text-secondary num">
+            {formatDate(quarter.start_date)} — {formatDate(quarter.end_date)}
+          </span>
+        </div>
+      </div>
+
+      {/* 통계 라인 — 표 같은 정렬 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-3 pt-6 border-t border-border-subtle">
+        <Stat label="경과율" value={`${progress}%`} />
+        <Stat label="현재 주차" value={`${week}주차`} />
+        <Stat label="남은 기간" value={`${weeksLeft}주`} />
+        <Stat
           label="이번 주 갱신"
-          value={`${update.done}/${update.total}`}
-          accent={update.total > 0 && update.done === update.total ? 'success' : 'default'}
+          value={`${update.done} / ${update.total}`}
+          highlight={update.total > 0 && update.done === update.total}
         />
       </div>
     </div>
   );
 }
 
-function Divider() {
-  return <span className="w-px h-5 bg-border-subtle hidden sm:inline-block" />;
-}
-
-function MetaItem({
+function Stat({
   label,
   value,
-  accent = 'default',
+  highlight,
 }: {
   label: string;
   value: string;
-  accent?: 'default' | 'success';
+  highlight?: boolean;
 }) {
   return (
-    <div className="flex items-baseline gap-1.5">
-      <span className="text-label-md text-text-tertiary">{label}</span>
-      <span
-        className={`text-body-lg num ${
-          accent === 'success' ? 'text-status-success' : 'text-text-primary'
-        }`}
-      >
+    <div className="flex flex-col gap-1">
+      <span className="text-label-md text-text-tertiary uppercase tracking-wider">{label}</span>
+      <span className={`text-heading-md num ${highlight ? 'text-status-success' : 'text-text-primary'}`}>
         {value}
       </span>
     </div>

@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { useTransition } from 'react';
 import { createObjective } from '@/app/actions';
 import { ObjectiveSection } from './ObjectiveSection';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 import { useToast } from '@/components/ui/Toast';
 import type { KR, Member, Objective } from '@/lib/types';
 
@@ -29,12 +30,12 @@ export function OKRTree({
   }
 
   return (
-    <div className="px-8">
-      {/* 섹션 헤더 */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="w-1 h-7 bg-status-success rounded-full" />
-        <h2 className="text-heading-md text-text-primary">OKR 진행 현황</h2>
-      </div>
+    <div className="px-8 pt-12">
+      <SectionHeader
+        number="02"
+        title="OKR 진행 현황"
+        description="Objective와 Key Result 단위 상세"
+      />
       {objectives.map((o, i) => (
         <ObjectiveSection
           key={o.id}

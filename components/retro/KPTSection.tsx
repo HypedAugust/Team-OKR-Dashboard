@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { updateRetro, type ActionResult } from '@/app/actions';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 import { useToast } from '@/components/ui/Toast';
 import type { Member, Retro } from '@/lib/types';
 
@@ -19,14 +20,12 @@ export function KPTSection({
   if (members.length === 0) return null;
 
   return (
-    <section className="px-8 mt-12 mb-16">
-      <div className="flex items-center gap-3 mb-3">
-        <span className="w-1 h-7 bg-status-success rounded-full" />
-        <h2 className="text-heading-md text-text-primary">KPT 회고</h2>
-      </div>
-      <p className="text-body-sm text-text-tertiary mb-5">
-        멤버별로 Keep / Problem / Try를 기록합니다.
-      </p>
+    <section className="px-8 pt-12 mb-16">
+      <SectionHeader
+        number="04"
+        title="KPT 회고"
+        description="멤버별 Keep · Problem · Try"
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
         {members.map((m) => (
           <KPTCard

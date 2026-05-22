@@ -67,8 +67,21 @@ const config: Config = {
           'Segoe UI',
           'sans-serif',
         ],
+        serif: [
+          'Noto Serif KR',
+          'ui-serif',
+          'Georgia',
+          'serif',
+        ],
+        mono: [
+          'ui-monospace',
+          'SF Mono',
+          'Menlo',
+          'monospace',
+        ],
       },
       fontSize: {
+        'display-xl':   ['120px', { lineHeight: '108px', fontWeight: '800', letterSpacing: '-0.04em' }],
         'display-hero': ['64px', { lineHeight: '68px', fontWeight: '800', letterSpacing: '-0.02em' }],
         'display-lg':   ['48px', { lineHeight: '52px', fontWeight: '800', letterSpacing: '-0.02em' }],
         'heading-xl':   ['32px', { lineHeight: '40px', fontWeight: '800', letterSpacing: '-0.01em' }],
