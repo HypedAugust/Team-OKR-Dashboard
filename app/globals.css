@@ -16,8 +16,8 @@
 
 html,
 body {
-  background-color: #0A0A0B;
-  color: #FFFFFF;
+  background-color: #0a0a0b;
+  color: #ffffff;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
     'Helvetica Neue', sans-serif;
   font-feature-settings: 'tnum' 1, 'cv11' 1;
@@ -36,13 +36,11 @@ button {
   font-family: inherit;
 }
 
-/* tabular numerals for all numeric displays */
 .num {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
 }
 
-/* skeleton shimmer */
 @keyframes shimmer {
   0% {
     background-position: -400px 0;
@@ -52,24 +50,17 @@ button {
   }
 }
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #1C1C1F 0%,
-    #252529 50%,
-    #1C1C1F 100%
-  );
+  background: linear-gradient(90deg, #1c1c1f 0%, #252529 50%, #1c1c1f 100%);
   background-size: 800px 100%;
   animation: shimmer 1.5s infinite linear;
 }
 
-/* focus visibility */
 *:focus-visible {
-  outline: 2px solid #5B8DEF;
+  outline: 2px solid #5b8def;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 50ms !important;
@@ -77,79 +68,261 @@ button {
   }
 }
 
-/* ─── Print / PDF mode ────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   PRINT / PDF MODE — light theme override (보고용)
+   ════════════════════════════════════════════════════════════ */
 @media print {
   :root {
     color-scheme: light;
   }
+
   html,
   body {
-    background: #FFFFFF !important;
-    color: #0A0A0B !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
   }
+
+  /* 인쇄 시 숨김 */
   .no-print,
-  [data-no-print='true'] {
+  [data-no-print='true'],
+  .delete-button,
+  .add-button {
     display: none !important;
   }
-  .objective-section,
-  .kr-card,
-  .kpt-card,
-  .score-row {
-    break-inside: avoid;
-    background: #F9FAFB !important;
-    border: 1px solid #E5E7EB !important;
-    color: #0A0A0B !important;
+
+  /* sticky 풀고 평범한 박스 */
+  header {
+    position: static !important;
+    background: #ffffff !important;
+    border-bottom: 2px solid #1e293b !important;
+    padding: 16px 24px !important;
   }
-  .hero-summary {
-    break-after: page;
+
+  /* ─── Backgrounds ─── */
+  .bg-bg-base {
+    background: #ffffff !important;
   }
+  .bg-bg-surface1 {
+    background: #ffffff !important;
+  }
+  .bg-bg-surface2 {
+    background: #f8fafc !important;
+  }
+  .bg-bg-surface3 {
+    background: #f1f5f9 !important;
+  }
+
+  /* ─── Text ─── */
   .text-text-primary {
-    color: #0A0A0B !important;
+    color: #0f172a !important;
   }
   .text-text-secondary {
-    color: #1F2937 !important;
+    color: #334155 !important;
   }
   .text-text-tertiary {
-    color: #4B5563 !important;
+    color: #64748b !important;
   }
   .text-text-muted {
-    color: #6B7280 !important;
+    color: #94a3b8 !important;
   }
-  /* keep status colors but slightly muted for print */
+
+  /* ─── Status colors ─── */
+  .text-status-success {
+    color: #15803d !important;
+  }
+  .text-status-warning {
+    color: #a16207 !important;
+  }
+  .text-status-danger {
+    color: #b91c1c !important;
+  }
+  .text-status-idle {
+    color: #6b7280 !important;
+  }
   .bg-status-success {
-    background: #16A862 !important;
-    color: #FFFFFF !important;
+    background: #16a34a !important;
   }
   .bg-status-warning {
-    background: #D9A21B !important;
-    color: #0A0A0B !important;
+    background: #eab308 !important;
   }
   .bg-status-danger {
-    background: #E04A3A !important;
-    color: #FFFFFF !important;
+    background: #dc2626 !important;
   }
+  .bg-status-idle {
+    background: #9ca3af !important;
+  }
+  .bg-status-success-soft {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+  }
+  .bg-status-warning-soft {
+    background: #fef3c7 !important;
+    color: #78350f !important;
+  }
+  .bg-status-danger-soft {
+    background: #fee2e2 !important;
+    color: #7f1d1d !important;
+  }
+  .bg-status-idle-soft {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+  }
+
+  /* ─── Hero signature card backgrounds ─── */
   .bg-accent-bg-success {
-    background: #D1FAE5 !important;
-    color: #064E3B !important;
+    background: #d1fae5 !important;
+    color: #14532d !important;
   }
   .bg-accent-bg-warning {
-    background: #FEF3C7 !important;
-    color: #78350F !important;
+    background: #fef3c7 !important;
+    color: #78350f !important;
   }
   .bg-accent-bg-danger {
-    background: #FEE2E2 !important;
-    color: #7F1D1D !important;
+    background: #fee2e2 !important;
+    color: #7f1d1d !important;
   }
   .bg-accent-bg-idle {
-    background: #F3F4F6 !important;
-    color: #374151 !important;
+    background: #f1f5f9 !important;
+    color: #334155 !important;
   }
+
+  /* Hero 카드 안의 글자도 라이트에서 보이도록 */
+  .bg-accent-bg-success .text-text-primary,
+  .bg-accent-bg-success .text-text-secondary,
+  .bg-accent-bg-success .text-text-tertiary {
+    color: #14532d !important;
+  }
+  .bg-accent-bg-warning .text-text-primary,
+  .bg-accent-bg-warning .text-text-secondary,
+  .bg-accent-bg-warning .text-text-tertiary {
+    color: #78350f !important;
+  }
+  .bg-accent-bg-danger .text-text-primary,
+  .bg-accent-bg-danger .text-text-secondary,
+  .bg-accent-bg-danger .text-text-tertiary {
+    color: #7f1d1d !important;
+  }
+
+  /* ─── Type badges ─── */
+  .text-type-commit {
+    color: #1e40af !important;
+  }
+  .text-type-aspire {
+    color: #6d28d9 !important;
+  }
+  .bg-type-commit-soft {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+  }
+  .bg-type-aspire-soft {
+    background: #ede9fe !important;
+    color: #6d28d9 !important;
+  }
+  .border-type-commit {
+    border-color: #3b82f6 !important;
+  }
+  .border-type-aspire {
+    border-color: #8b5cf6 !important;
+  }
+
+  /* ─── Borders ─── */
+  .border-border-subtle {
+    border-color: #e2e8f0 !important;
+  }
+  .border-border-default {
+    border-color: #cbd5e1 !important;
+  }
+  .border-border-strong {
+    border-color: #94a3b8 !important;
+  }
+
+  /* SVG track */
+  .stroke-bg-surface3 {
+    stroke: #e5e7eb !important;
+  }
+
+  /* ─── Card visual reinforcement ─── */
+  .kr-card,
+  .kpt-card,
+  .objective-section > div > div,
+  table {
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  .score-row {
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  /* 점수표 헤더 */
+  thead tr {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+  }
+
+  /* Hero 카드 — 일반은 흰 + border, 시그니처는 컬러 배경 유지 */
+  .hero-summary > div:not([class*='accent-bg-']) {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  /* KR 카드 좌측 stripe는 그대로 (식별 위해) */
+  .kr-card > div[class*='top-0'][class*='left-0'] {
+    /* stripe div - keep visible */
+  }
+
+  /* ─── Page break rules ─── */
+  .hero-summary {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  .objective-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .kr-card,
+  .kpt-card,
+  .score-row,
+  thead {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h1,
+  h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* ─── Print-only report header (선택) ─── */
+  .print-only {
+    display: block !important;
+  }
+
+  /* 색상 강제 적용 (브라우저 인쇄 미리보기에서 배경 그래픽 켜져 있어야 보임) */
   * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* Page setup */
   @page {
     size: A4 portrait;
-    margin: 16mm;
+    margin: 14mm 12mm;
   }
+
+  /* KR 카드 그리드 — 인쇄 시 2열 강제로 폭 활용 */
+  .objective-section .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  /* KPT 그리드도 2열 */
+  .kpt-card {
+    page-break-inside: avoid;
+  }
+}
+
+.print-only {
+  display: none;
 }
