@@ -84,12 +84,14 @@ export function DashboardClient({ bundle }: { bundle: QuarterBundle }) {
             onChangeViewDate={setViewDate}
           />
 
-          <HeroSummary
-            quarter={quarter}
-            krs={objectives.flatMap((o) => o.krs)}
-            members={members}
-            viewDate={viewDate}
-          />
+          <div className="mb-10">
+            <HeroSummary
+              quarter={quarter}
+              krs={objectives.flatMap((o) => o.krs)}
+              members={members}
+              viewDate={viewDate}
+            />
+          </div>
 
           {objectives.length === 0 && (
             <div className="px-8">
