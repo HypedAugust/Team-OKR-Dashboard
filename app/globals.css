@@ -225,15 +225,11 @@ button {
     border-color: #8b5cf6 !important;
   }
 
-  /* ─── Borders ─── */
-  .border-border-subtle {
-    border-color: #e2e8f0 !important;
-  }
-  .border-border-default {
-    border-color: #cbd5e1 !important;
-  }
+  /* ─── Borders — 단일 hairline ─── */
+  .border-border-subtle,
+  .border-border-default,
   .border-border-strong {
-    border-color: #94a3b8 !important;
+    border-color: #eaeaea !important;
   }
 
   /* SVG track */
@@ -241,35 +237,61 @@ button {
     stroke: #e5e7eb !important;
   }
 
-  /* ─── Card visual reinforcement ─── */
+  /* ─── 카드 외곽 박스 제거 — Tufte data-ink ratio ─── */
   .kr-card,
   .kpt-card,
-  .objective-section > div > div,
+  .objective-section > div:first-child,
   table {
-    border: 1px solid #cbd5e1 !important;
+    border: none !important;
     background: #ffffff !important;
     box-shadow: none !important;
   }
 
+  /* 점수표 — 외곽 border 제거, 행 사이 hairline만 */
   .score-row {
-    border-top: 1px solid #e2e8f0 !important;
+    border-top: 1px solid #eaeaea !important;
   }
-
-  /* 점수표 헤더 */
   thead tr {
-    background: #f1f5f9 !important;
+    background: #f7f7f7 !important;
     color: #334155 !important;
+    border-bottom: 1px solid #eaeaea !important;
   }
 
-  /* Hero 카드 — 일반은 흰 + border, 시그니처는 컬러 배경 유지 */
+  /* Hero plain 카드 — border 제거, 옅은 배경으로만 시그니처와 구분 */
   .hero-summary > div:not([class*='accent-bg-']) {
-    background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
+    background: #f7f7f7 !important;
+    border: none !important;
+  }
+  /* Hero 시그니처 카드의 라임 ring outline도 제거 (배경색이 강조 역할) */
+  .hero-summary [class*='ring-'] {
+    box-shadow: none !important;
   }
 
-  /* KR 카드 좌측 stripe는 그대로 (식별 위해) */
+  /* KR 카드 — 좌측 stripe 굵게 (4px) — 외곽 border 제거된 만큼 식별 강화 */
+  .kr-card {
+    position: relative !important;
+  }
   .kr-card > div[class*='top-0'][class*='left-0'] {
-    /* stripe div - keep visible */
+    width: 4px !important;
+    border-radius: 0 !important;
+  }
+
+  /* KPT 카드 안 K/P/T 좌측 border — 굵은 컬러 → 얇은 hairline */
+  .kpt-card .border-l-2 {
+    border-left-width: 1px !important;
+    border-left-color: #eaeaea !important;
+  }
+
+  /* 메타바 통계 알약 — 흰 배경으로 시각 잡음 감소 */
+  .meta-bar > div + div {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* 알약/칩 outline 제거 — 배경만으로 식별 */
+  .border-type-commit,
+  .border-type-aspire {
+    border: none !important;
   }
 
   /* ─── Page break rules ─── */
@@ -327,7 +349,7 @@ button {
   /* Hero 카드 4개 무조건 한 줄 */
   .hero-summary > div.grid {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    gap: 14px !important;
   }
   .hero-summary [class*='h-[220px]'],
   .hero-summary .h-\[220px\] {
@@ -374,10 +396,10 @@ button {
     margin-top: 14px !important;
   }
 
-  /* KR 카드 — 가로 3열, 컴팩트 */
+  /* KR 카드 — 가로 3열, 호흡감 있는 gap */
   .objective-section .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    gap: 14px !important;
   }
   .kr-card {
     min-height: 0 !important;
@@ -540,18 +562,22 @@ button {
     font-size: 10px !important;
   }
 
-  /* 섹션 간 마진 최소 */
+  /* 섹션 간 마진 — 박스 줄인 만큼 여백으로 위계 */
   section.objective-section,
   section.hero-summary,
   section.px-8 {
-    margin-top: 6px !important;
-    margin-bottom: 6px !important;
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
   }
   section.px-8.mt-12 {
-    margin-top: 8px !important;
+    margin-top: 20px !important;
   }
   section.px-8.mb-16 {
     margin-bottom: 0 !important;
+  }
+  /* 첫 섹션은 위 여백 적게 */
+  .hero-summary {
+    margin-top: 8px !important;
   }
 
   /* Objective 헤더 카드 — 한 줄 가깝게 */
