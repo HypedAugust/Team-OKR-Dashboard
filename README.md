@@ -2,108 +2,90 @@
 
 분기 OKR 진척도와 회고를 한 페이지에서 시각적으로 관리하는 Next.js 대시보드.
 
-- **스택**: Next.js 14 (App Router) + TypeScript + Tailwind CSS + Vercel KV
-- **배포**: Vercel
-- **권한**: 인증 없음 (링크 보유자 전원 보기·편집)
+- **스택**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- **데이터 저장**: **브라우저 localStorage** (외부 DB 불필요)
+- **배포**: Vercel 무료 플랜으로 100% 동작
+- **권한**: 인증 없음 — 링크 보유자 누구나 보기·편집
 
-자세한 기획·구조·디자인 문서는 다음을 참고:
-- [PRD.md](PRD.md) — 제품 요구사항
-- [IA.md](IA.md) — 정보 구조
-- [Workflow.md](Workflow.md) — 사용자·화면·상태 전이
-- [TRD.md](TRD.md) — 기술 요구사항
-- [DesignSystem.md](DesignSystem.md) — 디자인 시스템
+자세한 기획·구조·디자인 문서:
+- [PRD.md](PRD.md) · [IA.md](IA.md) · [Workflow.md](Workflow.md) · [TRD.md](TRD.md) · [DesignSystem.md](DesignSystem.md)
 
 ---
 
-## 빠른 시작
+## ⚠️ 데이터 저장 방식이 localStorage라는 의미
 
-### 1) 의존성 설치
+이 대시보드는 **외부 데이터베이스를 쓰지 않습니다.** 모든 데이터(분기, OKR, 회고)는 **사용자의 브라우저 안에만 저장**됩니다.
 
-```bash
-pnpm install
-# 또는 npm install / yarn install
-```
+| 항목 | 동작 |
+|---|---|
+| ✅ 같은 브라우저 같은 PC | 새로고침해도 그대로 |
+| ✅ 같은 브라우저 다른 탭 | 자동 동기화됨 |
+| ❌ 다른 PC / 다른 브라우저 | **각자 자기 데이터를 봄** (자동 동기화 안 됨) |
+| ❌ 시크릿 모드 / 캐시 삭제 | 데이터 사라짐 |
 
-### 2) 환경 변수 설정
+**팀 공유 운영 방법**: 헤더의 **[Export]** 버튼으로 JSON 파일을 받아 팀원에게 전달하고, 받은 사람은 **[Import]** 로 불러오면 됩니다. 매주 한 명이 마스터 사본을 관리하고 다른 사람은 Import해서 보는 방식을 권장합니다.
 
-Vercel KV는 Vercel Storage 통합 시 자동 주입됩니다. 로컬 개발 시에는 Vercel에서 KV 값을 복사해 `.env.local`에 추가하세요.
-
-```bash
-cp .env.example .env.local
-# .env.local 에 다음 값을 채워 넣기:
-# KV_URL=...
-# KV_REST_API_URL=...
-# KV_REST_API_TOKEN=...
-# KV_REST_API_READ_ONLY_TOKEN=...
-```
-
-> Vercel KV 값은 Vercel 대시보드 → Storage → 해당 KV 인스턴스 → `.env.local` 탭에서 한 번에 복사할 수 있습니다.
-
-### 3) 개발 서버 실행
-
-```bash
-pnpm dev
-```
-
-브라우저에서 http://localhost:3000 접속.
+> 실시간 다중 사용자 동기화가 꼭 필요하면 별도 DB(Vercel KV, Supabase, Firebase 등) 연결이 필요합니다. 그땐 `lib/storage.ts`만 그 DB로 바꿔 끼우면 됩니다.
 
 ---
 
-## Vercel 배포
+## 빠른 시작 (로컬)
 
-### 1) Vercel 프로젝트 생성
+```bash
+pnpm install     # 또는 npm install / yarn
+pnpm dev         # → http://localhost:3000
+```
 
-- GitHub에 이 저장소를 푸시
-- [vercel.com](https://vercel.com) → New Project → 저장소 선택 → 기본 설정으로 Deploy
+별도 환경변수 설정 없음. 즉시 동작합니다.
 
-### 2) Vercel KV 연결
+---
 
-- Vercel 프로젝트 진입 → **Storage** 탭 → **Create Database** → **KV** 선택
-- 생성된 KV 인스턴스를 프로젝트에 연결 (`Connect Project`)
-- 환경변수 4종(`KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`)이 자동 주입됨
+## Vercel 배포 (무료 Hobby 플랜)
 
-### 3) 재배포
+### 1) GitHub repo에 push
+이미 git이 초기화돼 있다면:
+```bash
+git push origin main
+```
 
-- KV 연결 후 자동 재배포 트리거됨
-- 배포 완료 시 `*.vercel.app` URL이 발급됨
+### 2) Vercel에서 Import
+1. https://vercel.com/new
+2. **Import Git Repository** → 해당 repo 선택
+3. Framework: **Next.js** 자동 감지
+4. 환경변수 입력 없이 **Deploy** 클릭
+5. 끝. `*.vercel.app` URL이 발급되고 즉시 사용 가능
 
-### 4) 도메인 (선택)
-
-- 프로젝트 → **Domains** 탭에서 커스텀 도메인 연결
-
-> 인증이 없는 대시보드이므로 URL을 공유받은 사람은 누구나 보기·편집할 수 있습니다. 사외에 공유하지 않도록 운영상 주의하세요.
+> KV 데이터베이스, 환경변수, 결제 정보 모두 필요 없습니다.
 
 ---
 
 ## 사용 가이드
 
-### 첫 실행 (분기 0개)
+### 첫 진입
+- "분기가 아직 없습니다" 화면이 보입니다
+- **[26.Q2 샘플 데이터 불러오기]** 클릭하면 PDF 기반 샘플 OKR과 멤버가 채워짐 (운영 시작 전 둘러보기용)
+- 또는 우상단 **[+ 새 분기]** 로 빈 분기 시작
 
-상단 헤더의 **[+ 새 분기]** 버튼을 눌러 첫 분기를 만드세요.
-- 분기명 예: `26.Q3`
-- 시작일·종료일 입력
-
-### 매주 갱신 (편집자)
-
+### 매주 갱신
 1. 본인 담당 KR 카드 클릭
 2. 현재값 / 진척도(%) / 신뢰도(高/中/低) 입력
-3. **저장** → Hero 카드와 차트가 즉시 갱신됨
+3. **저장** → Hero 카드와 진척도 바가 즉시 갱신
 
 ### 새 분기 시작
-
-- **[+ 새 분기]** → 새 분기 생성 시 기존 활성 분기는 자동으로 아카이브됨
-- 과거 분기는 상단 분기 셀렉터에서 읽기 전용으로 조회 가능
-
-### PDF 보고서
-
-- 우상단 **[PDF 다운로드]** 버튼 → 브라우저 인쇄 다이얼로그
-- 인쇄 또는 "PDF로 저장" 선택
-- 자동으로 라이트 테마로 변환되며 편집 UI는 모두 숨겨짐
+- **[+ 새 분기]** → 분기명·시작일·종료일 입력
+- 이전 활성 분기는 자동으로 아카이브 → 상단 셀렉터에서 읽기 전용 조회 가능
 
 ### 멤버 관리
+- **[멤버 관리]** → 추가/삭제
+- Owner 선택 드롭다운과 KPT 회고 카드에 즉시 반영
 
-- 우상단 **[멤버 관리]** → 멤버 추가/삭제
-- 추가된 멤버는 KR Owner 선택지와 KPT 회고 카드에 즉시 반영됨
+### PDF 보고서
+- **[PDF 다운로드]** → 브라우저 인쇄 다이얼로그
+- "PDF로 저장" 선택 시 다크 → 라이트 테마로 자동 변환되어 출력
+
+### 데이터 백업·공유 (중요)
+- **Export**: 현재 모든 데이터를 JSON 파일로 다운로드 → 백업 또는 팀원에게 전달
+- **Import**: JSON 파일 업로드 → 현재 브라우저 데이터를 그것으로 덮어쓰기 (확인 다이얼로그 없음, 주의)
 
 ---
 
@@ -113,48 +95,51 @@ pnpm dev
 /
 ├─ app/
 │  ├─ layout.tsx         # 전역 레이아웃 + Toast Provider
-│  ├─ page.tsx           # 메인 대시보드 (Server Component)
-│  ├─ actions.ts         # Server Actions (12종)
+│  ├─ page.tsx           # 서버 쉘 (Suspense)
+│  ├─ actions.ts         # CRUD 액션 (localStorage 기반, 클라이언트)
 │  └─ globals.css        # Tailwind + 인쇄용 CSS
 ├─ components/
-│  ├─ header/            # Global Header / Quarter Selector / Action Buttons
-│  ├─ meta/              # Quarter Meta Bar
-│  ├─ hero/              # Hero Summary + Hero Card
-│  ├─ tree/              # OKR Tree / Objective Section / KR Card
-│  ├─ score/             # Score Table
-│  ├─ retro/             # KPT Section
-│  ├─ modal/             # Modal Container / New Quarter / Member Manage / Confirm
-│  └─ ui/                # Button / ProgressBar / Badge / Chip / Toast 등
+│  ├─ DashboardClient.tsx  # 페이지의 실제 로직 (Client)
+│  ├─ header/              # GlobalHeader / QuarterSelector / ActionButtons / DataIO
+│  ├─ meta/                # QuarterMetaBar
+│  ├─ hero/                # HeroSummary / HeroCard
+│  ├─ tree/                # OKRTree / ObjectiveSection / KRCard
+│  ├─ score/               # ScoreTable
+│  ├─ retro/               # KPTSection
+│  ├─ modal/               # Modal / ConfirmDialog / NewQuarter / MemberManage
+│  └─ ui/                  # Button / ProgressBar / Badge / Chip / Toast 등
 ├─ lib/
 │  ├─ types.ts           # 데이터 타입
-│  ├─ kv.ts              # Vercel KV 클라이언트 + 키 빌더
-│  ├─ calc.ts            # 진척도·경과율 등 계산 함수
+│  ├─ storage.ts         # localStorage CRUD + change event
+│  ├─ seed.ts            # 26.Q2 샘플 데이터
+│  ├─ calc.ts            # 진척도·경과율·달성 판정
 │  ├─ constants.ts       # 임계값
 │  └─ id.ts              # ID 생성 헬퍼
 ├─ PRD.md / IA.md / Workflow.md / TRD.md / DesignSystem.md
-├─ package.json
-├─ tailwind.config.ts
-├─ tsconfig.json
-└─ next.config.js
+└─ ...설정 파일
 ```
 
 ---
 
 ## 데이터 모델 요약
 
-| 키 패턴 | 값 |
-|---|---|
-| `quarters:list` | 분기 ID 배열 |
-| `quarter:{qid}` | Quarter 메타 |
-| `quarter:{qid}:objectives` | Objective ID 배열 |
-| `quarter:{qid}:objective:{oid}` | Objective 본문 |
-| `quarter:{qid}:objective:{oid}:krs` | KR ID 배열 |
-| `quarter:{qid}:kr:{kid}` | KR 본문 (진척도, 신뢰도, 갱신일 등) |
-| `quarter:{qid}:final_score:{kid}` | 분기 종료 후 결과·평가 |
-| `quarter:{qid}:retro:{member_id}` | KPT 회고 |
-| `members:list` | 멤버 명단 |
+브라우저 localStorage 키 **`okr-dashboard-v1`** 에 JSON 한 덩어리로 저장됩니다.
 
-자세한 명세는 [TRD.md](TRD.md) §4 참조.
+```ts
+{
+  quarters: { [qid]: Quarter },
+  quartersOrder: string[],
+  objectives: { [oid]: { quarter_id, data: Objective } },
+  objectivesOrder: { [qid]: string[] },
+  krs: { [kid]: { quarter_id, data: KR } },
+  krsOrder: { [`${qid}:${oid}`]: string[] },
+  finalScores: { [`${qid}:${kid}`]: FinalScore },
+  retros: { [`${qid}:${mid}`]: Retro },
+  members: Member[]
+}
+```
+
+자세한 명세는 [TRD.md](TRD.md) §4, [PRD.md](PRD.md) §9 참조.
 
 ---
 
@@ -162,10 +147,22 @@ pnpm dev
 
 | 증상 | 해결 |
 |---|---|
-| "KV 연결 실패" / 페이지 진입 시 에러 | Vercel Storage에서 KV 인스턴스를 프로젝트에 연결했는지 확인. 환경변수 4종이 모두 주입되어야 합니다 |
-| 저장은 됐는데 화면이 안 바뀜 | 페이지 새로고침. `revalidatePath`가 동작하지만 일부 캐시 상황에서 지연 가능 |
-| PDF 출력 시 색상이 단조로움 | 브라우저 인쇄 설정에서 **"배경 그래픽"** 옵션을 켜야 색상이 함께 출력됩니다 |
-| 분기 셀렉터에 분기가 없음 | "+ 새 분기"로 첫 분기를 만들어야 셀렉터에 항목이 나타납니다 |
+| 데이터가 사라졌어요 | 브라우저 캐시·시크릿 모드 사용 여부 확인. 일반 모드에서 Export로 주기적 백업 권장 |
+| 다른 사람 화면에 내 데이터가 안 보임 | localStorage는 브라우저 단위. **Export → 전달 → Import** 흐름으로 동기화 |
+| PDF 색상이 단조로움 | 브라우저 인쇄 설정에서 **"배경 그래픽"** 옵션 켜기 |
+| Import 후 이전 데이터로 되돌리고 싶음 | 미리 받아둔 Export JSON을 다시 Import (덮어쓰기) |
+
+---
+
+## 향후 확장 (옵션)
+
+`lib/storage.ts`의 함수만 다른 백엔드로 교체하면 됩니다:
+
+| 옵션 | 무료 한도 | 설정 난이도 |
+|---|---|---|
+| Vercel KV | 30K commands/day | Vercel Storage 탭에서 클릭 5회 |
+| Upstash Redis | 10K commands/day | Upstash 회원가입 + DB 생성 |
+| Supabase | 500MB | 프로젝트 생성 + 테이블 정의 |
 
 ---
 
