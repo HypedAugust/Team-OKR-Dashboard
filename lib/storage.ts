@@ -1,5 +1,5 @@
-'use client';
-
+import 'server-only';
+import { Redis } from '@upstash/redis';
 import type {
   FinalScore,
   KR,
@@ -10,18 +10,31 @@ import type {
   Retro,
 } from './types';
 
-const STORAGE_KEY = 'okr-dashboard-v1';
-const CHANGE_EVENT = 'okr-storage-changed';
+const STORAGE_KEY = 'okr-dashboard:v1';
+
+let redisInstance: Redis | null = null;
+function getRedis(): Redis {
+  if (redisInstance) return redisInstance;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    throw new Error(
+      'Upstash 환경변수가 설정되지 않았습니다. UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN 을 Vercel에 추가하세요.'
+    );
+  }
+  redisInstance = new Redis({ url, token });
+  return redisInstance;
+}
 
 export interface StorageState {
   quarters: Record<string, Quarter>;
   quartersOrder: string[];
   objectives: Record<string, { quarter_id: string; data: Objective }>;
-  objectivesOrder: Record<string, string[]>; // qid → oid[]
+  objectivesOrder: Record<string, string[]>;
   krs: Record<string, { quarter_id: string; data: KR }>;
-  krsOrder: Record<string, string[]>; // `${qid}:${oid}` → kid[]
-  finalScores: Record<string, FinalScore>; // `${qid}:${kid}` → FinalScore
-  retros: Record<string, Retro>; // `${qid}:${mid}` → Retro
+  krsOrder: Record<string, string[]>;
+  finalScores: Record<string, FinalScore>;
+  retros: Record<string, Retro>;
   members: Member[];
 }
 
@@ -37,50 +50,35 @@ const emptyState: StorageState = {
   members: [],
 };
 
-function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
-}
-
-export function readState(): StorageState {
-  if (!isBrowser()) return emptyState;
+export async function readState(): Promise<StorageState> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return emptyState;
-    const parsed = JSON.parse(raw);
-    return { ...emptyState, ...parsed };
-  } catch {
+    const data = await getRedis().get<StorageState>(STORAGE_KEY);
+    if (!data) return emptyState;
+    return { ...emptyState, ...data };
+  } catch (e) {
+    console.error('[storage] readState failed:', e);
     return emptyState;
   }
 }
 
-export function writeState(state: StorageState): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
+export async function writeState(state: StorageState): Promise<void> {
+  await getRedis().set(STORAGE_KEY, state);
 }
 
-export function resetState(): void {
-  if (!isBrowser()) return;
-  localStorage.removeItem(STORAGE_KEY);
-  window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
+export async function mutateState(
+  updater: (s: StorageState) => StorageState
+): Promise<void> {
+  const current = await readState();
+  const next = updater(current);
+  await writeState(next);
 }
 
-export function onStorageChange(handler: () => void): () => void {
-  if (!isBrowser()) return () => {};
-  const listener = () => handler();
-  window.addEventListener(CHANGE_EVENT, listener);
-  // also pick up changes from other tabs
-  const storageListener = (e: StorageEvent) => {
-    if (e.key === STORAGE_KEY) handler();
-  };
-  window.addEventListener('storage', storageListener);
-  return () => {
-    window.removeEventListener(CHANGE_EVENT, listener);
-    window.removeEventListener('storage', storageListener);
-  };
+export async function resetState(): Promise<void> {
+  await getRedis().del(STORAGE_KEY);
 }
 
-export function getActiveQuarterId(state: StorageState = readState()): string | null {
+export async function getActiveQuarterId(): Promise<string | null> {
+  const state = await readState();
   for (const id of state.quartersOrder) {
     const q = state.quarters[id];
     if (q?.status === 'active') return id;
@@ -88,8 +86,8 @@ export function getActiveQuarterId(state: StorageState = readState()): string | 
   return state.quartersOrder[0] ?? null;
 }
 
-export function getBundle(qid: string | null): QuarterBundle {
-  const state = readState();
+export async function getBundle(qid: string | null): Promise<QuarterBundle> {
+  const state = await readState();
   const quartersList: Quarter[] = state.quartersOrder
     .map((id) => state.quarters[id])
     .filter((q): q is Quarter => Boolean(q));
@@ -133,24 +131,17 @@ export function getBundle(qid: string | null): QuarterBundle {
   return { quarter, quartersList, objectives, finalScores, retros, members: state.members };
 }
 
-// ─── Mutations ──────────────────────────────────────────────────────────
-
-export function mutate(updater: (s: StorageState) => StorageState): void {
-  const current = readState();
-  const next = updater(current);
-  writeState(next);
+export async function exportJson(): Promise<string> {
+  const state = await readState();
+  return JSON.stringify(state, null, 2);
 }
 
-export function exportJson(): string {
-  return JSON.stringify(readState(), null, 2);
-}
-
-export function importJson(json: string): { ok: true } | { ok: false; error: string } {
+export async function importJson(json: string): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const parsed = JSON.parse(json);
     if (typeof parsed !== 'object' || parsed === null)
       return { ok: false, error: '잘못된 JSON 형식입니다.' };
-    writeState({ ...emptyState, ...parsed });
+    await writeState({ ...emptyState, ...parsed });
     return { ok: true };
   } catch (e: any) {
     return { ok: false, error: `파일 해석 실패: ${e?.message ?? 'unknown'}` };

@@ -1,16 +1,15 @@
-import { Suspense } from 'react';
 import { DashboardClient } from '@/components/DashboardClient';
+import { getActiveQuarterId, getBundle } from '@/lib/storage';
 
-export default function Page() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen grid place-items-center">
-          <div className="text-text-tertiary text-body-md">불러오는 중…</div>
-        </main>
-      }
-    >
-      <DashboardClient />
-    </Suspense>
-  );
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) {
+  const requestedQid = searchParams.q ?? (await getActiveQuarterId());
+  const bundle = await getBundle(requestedQid);
+  return <DashboardClient bundle={bundle} />;
 }

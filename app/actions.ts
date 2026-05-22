@@ -1,8 +1,9 @@
-'use client';
+'use server';
 
+import { revalidatePath } from 'next/cache';
 import { TEXT_MAX_LENGTH } from '@/lib/constants';
 import { nextKRId, nextSerialId, slugify } from '@/lib/id';
-import { mutate, readState } from '@/lib/storage';
+import { mutateState, readState, writeState } from '@/lib/storage';
 import type {
   Confidence,
   FinalScore,
@@ -28,8 +29,12 @@ function err<T = void>(msg: string): ActionResult<T> {
   return { ok: false, error: msg };
 }
 
-function assertActive(qid: string): Quarter | string {
-  const state = readState();
+function revalidate() {
+  revalidatePath('/');
+}
+
+async function assertActive(qid: string): Promise<Quarter | string> {
+  const state = await readState();
   const q = state.quarters[qid];
   if (!q) return '분기를 찾을 수 없습니다.';
   if (q.status !== 'active') return '활성 분기가 아닙니다.';
@@ -42,39 +47,40 @@ export async function createQuarter(input: {
   start_date: string;
   end_date: string;
 }): Promise<ActionResult<{ qid: string }>> {
-  const name = trim(input.name, TEXT_MAX_LENGTH.quarterName);
-  if (!name) return err('분기명을 입력하세요.');
-  if (!input.start_date || !input.end_date)
-    return err('시작일과 종료일을 입력하세요.');
+  try {
+    const name = trim(input.name, TEXT_MAX_LENGTH.quarterName);
+    if (!name) return err('분기명을 입력하세요.');
+    if (!input.start_date || !input.end_date) return err('시작일과 종료일을 입력하세요.');
 
-  const qid = slugify(name) || `q-${Date.now()}`;
-  const state = readState();
-  if (state.quarters[qid]) return err('이미 존재하는 분기입니다.');
+    const qid = slugify(name) || `q-${Date.now()}`;
+    const state = await readState();
+    if (state.quarters[qid]) return err('이미 존재하는 분기입니다.');
 
-  mutate((s) => {
-    const nextQuarters = { ...s.quarters };
-    for (const id of s.quartersOrder) {
-      const q = nextQuarters[id];
-      if (q?.status === 'active') {
-        nextQuarters[id] = { ...q, status: 'archived' };
+    await mutateState((s) => {
+      const nextQuarters = { ...s.quarters };
+      for (const id of s.quartersOrder) {
+        const q = nextQuarters[id];
+        if (q?.status === 'active') nextQuarters[id] = { ...q, status: 'archived' };
       }
-    }
-    nextQuarters[qid] = {
-      id: qid,
-      name,
-      start_date: input.start_date,
-      end_date: input.end_date,
-      status: 'active',
-    };
-    return {
-      ...s,
-      quarters: nextQuarters,
-      quartersOrder: [qid, ...s.quartersOrder],
-      objectivesOrder: { ...s.objectivesOrder, [qid]: [] },
-    };
-  });
-
-  return ok({ qid });
+      nextQuarters[qid] = {
+        id: qid,
+        name,
+        start_date: input.start_date,
+        end_date: input.end_date,
+        status: 'active',
+      };
+      return {
+        ...s,
+        quarters: nextQuarters,
+        quartersOrder: [qid, ...s.quartersOrder],
+        objectivesOrder: { ...s.objectivesOrder, [qid]: [] },
+      };
+    });
+    revalidate();
+    return ok({ qid });
+  } catch (e: any) {
+    return err(`분기 생성 실패: ${e?.message ?? ''}`);
+  }
 }
 
 /* ─── Objective ──────────────────────────────────────────── */
@@ -82,27 +88,24 @@ export async function createObjective(
   qid: string,
   title: string
 ): Promise<ActionResult<{ oid: string }>> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  const t = trim(title, TEXT_MAX_LENGTH.objectiveTitle);
-  const state = readState();
-  const existingOids = state.objectivesOrder[qid] ?? [];
-  const oid = nextSerialId(existingOids, 'O');
+  const state = await readState();
+  const existing = state.objectivesOrder[qid] ?? [];
+  const oid = nextSerialId(existing, 'O');
+  const t = trim(title, TEXT_MAX_LENGTH.objectiveTitle) || '새 Objective';
 
-  mutate((s) => {
-    const obj: Objective = { id: oid, title: t || '새 Objective' };
-    return {
-      ...s,
-      objectives: { ...s.objectives, [oid]: { quarter_id: qid, data: obj } },
-      objectivesOrder: {
-        ...s.objectivesOrder,
-        [qid]: [...(s.objectivesOrder[qid] ?? []), oid],
-      },
-      krsOrder: { ...s.krsOrder, [`${qid}:${oid}`]: [] },
-    };
-  });
-
+  await mutateState((s) => ({
+    ...s,
+    objectives: { ...s.objectives, [oid]: { quarter_id: qid, data: { id: oid, title: t } } },
+    objectivesOrder: {
+      ...s.objectivesOrder,
+      [qid]: [...(s.objectivesOrder[qid] ?? []), oid],
+    },
+    krsOrder: { ...s.krsOrder, [`${qid}:${oid}`]: [] },
+  }));
+  revalidate();
   return ok({ oid });
 }
 
@@ -111,14 +114,14 @@ export async function updateObjective(
   oid: string,
   patch: { title?: string }
 ): Promise<ActionResult> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  const state = readState();
+  const state = await readState();
   const existing = state.objectives[oid]?.data;
   if (!existing) return err('Objective를 찾을 수 없습니다.');
 
-  mutate((s) => ({
+  await mutateState((s) => ({
     ...s,
     objectives: {
       ...s.objectives,
@@ -134,15 +137,15 @@ export async function updateObjective(
       },
     },
   }));
-
+  revalidate();
   return ok();
 }
 
 export async function deleteObjective(qid: string, oid: string): Promise<ActionResult> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  mutate((s) => {
+  await mutateState((s) => {
     const krIds = s.krsOrder[`${qid}:${oid}`] ?? [];
     const nextKrs = { ...s.krs };
     const nextScores = { ...s.finalScores };
@@ -166,7 +169,7 @@ export async function deleteObjective(qid: string, oid: string): Promise<ActionR
       finalScores: nextScores,
     };
   });
-
+  revalidate();
   return ok();
 }
 
@@ -176,14 +179,14 @@ export async function createKR(
   oid: string,
   input?: { type?: KRType; target_text?: string; target_value?: number | null }
 ): Promise<ActionResult<{ kid: string }>> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  const state = readState();
+  const state = await readState();
   const existing = state.krsOrder[`${qid}:${oid}`] ?? [];
   const kid = nextKRId(existing, oid);
 
-  mutate((s) => {
+  await mutateState((s) => {
     const kr: KR = {
       id: kid,
       objective_id: oid,
@@ -206,7 +209,7 @@ export async function createKR(
       },
     };
   });
-
+  revalidate();
   return ok({ kid });
 }
 
@@ -224,14 +227,13 @@ export async function updateKR(
     confidence: Confidence;
   }>
 ): Promise<ActionResult> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  const state = readState();
+  const state = await readState();
   const existing = state.krs[kid]?.data;
   if (!existing) return err('KR을 찾을 수 없습니다.');
 
-  // 진척도 자동 계산: target_value > 0이면 current/target, 아니면 patch.progress 또는 기존값 유지
   const mergedTarget =
     patch.target_value !== undefined ? patch.target_value : existing.target_value;
   const mergedCurrent =
@@ -246,7 +248,7 @@ export async function updateKR(
     computedProgress = existing.progress;
   }
 
-  mutate((s) => ({
+  await mutateState((s) => ({
     ...s,
     krs: {
       ...s.krs,
@@ -270,7 +272,7 @@ export async function updateKR(
       },
     },
   }));
-
+  revalidate();
   return ok();
 }
 
@@ -279,59 +281,19 @@ export async function deleteKR(
   oid: string,
   kid: string
 ): Promise<ActionResult> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  mutate((s) => {
+  await mutateState((s) => {
     const nextKrs = { ...s.krs };
     delete nextKrs[kid];
     const nextOrder = { ...s.krsOrder };
-    nextOrder[`${qid}:${oid}`] = (nextOrder[`${qid}:${oid}`] ?? []).filter(
-      (x) => x !== kid
-    );
+    nextOrder[`${qid}:${oid}`] = (nextOrder[`${qid}:${oid}`] ?? []).filter((x) => x !== kid);
     const nextScores = { ...s.finalScores };
     delete nextScores[`${qid}:${kid}`];
-    return {
-      ...s,
-      krs: nextKrs,
-      krsOrder: nextOrder,
-      finalScores: nextScores,
-    };
+    return { ...s, krs: nextKrs, krsOrder: nextOrder, finalScores: nextScores };
   });
-
-  return ok();
-}
-
-/* ─── Final Score ────────────────────────────────────────── */
-export async function updateFinalScore(
-  qid: string,
-  kid: string,
-  patch: { result_text?: string; evaluation?: string }
-): Promise<ActionResult> {
-  const check = assertActive(qid);
-  if (typeof check === 'string') return err(check);
-
-  mutate((s) => {
-    const key = `${qid}:${kid}`;
-    const existing = s.finalScores[key] ?? {
-      kr_id: kid,
-      result_text: '',
-      evaluation: '',
-    };
-    const next: FinalScore = {
-      kr_id: kid,
-      result_text:
-        patch.result_text !== undefined
-          ? trim(patch.result_text, TEXT_MAX_LENGTH.finalScoreText)
-          : existing.result_text,
-      evaluation:
-        patch.evaluation !== undefined
-          ? trim(patch.evaluation, TEXT_MAX_LENGTH.finalScoreText)
-          : existing.evaluation,
-    };
-    return { ...s, finalScores: { ...s.finalScores, [key]: next } };
-  });
-
+  revalidate();
   return ok();
 }
 
@@ -341,35 +303,26 @@ export async function updateRetro(
   mid: string,
   patch: { keep?: string; problem?: string; try_?: string }
 ): Promise<ActionResult> {
-  const check = assertActive(qid);
+  const check = await assertActive(qid);
   if (typeof check === 'string') return err(check);
 
-  mutate((s) => {
+  await mutateState((s) => {
     const key = `${qid}:${mid}`;
-    const existing = s.retros[key] ?? {
-      member_id: mid,
-      keep: '',
-      problem: '',
-      try_: '',
-    };
+    const existing = s.retros[key] ?? { member_id: mid, keep: '', problem: '', try_: '' };
     const next: Retro = {
       member_id: mid,
       keep:
-        patch.keep !== undefined
-          ? trim(patch.keep, TEXT_MAX_LENGTH.retroText)
-          : existing.keep,
+        patch.keep !== undefined ? trim(patch.keep, TEXT_MAX_LENGTH.retroText) : existing.keep,
       problem:
         patch.problem !== undefined
           ? trim(patch.problem, TEXT_MAX_LENGTH.retroText)
           : existing.problem,
       try_:
-        patch.try_ !== undefined
-          ? trim(patch.try_, TEXT_MAX_LENGTH.retroText)
-          : existing.try_,
+        patch.try_ !== undefined ? trim(patch.try_, TEXT_MAX_LENGTH.retroText) : existing.try_,
     };
     return { ...s, retros: { ...s.retros, [key]: next } };
   });
-
+  revalidate();
   return ok();
 }
 
@@ -378,7 +331,7 @@ export async function addMember(name: string): Promise<ActionResult<{ mid: strin
   const trimmed = trim(name, TEXT_MAX_LENGTH.memberName);
   if (!trimmed) return err('이름을 입력하세요.');
 
-  const state = readState();
+  const state = await readState();
   let baseId = slugify(trimmed) || `m-${Date.now()}`;
   let mid = baseId;
   let i = 2;
@@ -386,37 +339,62 @@ export async function addMember(name: string): Promise<ActionResult<{ mid: strin
     mid = `${baseId}-${i++}`;
   }
 
-  mutate((s) => ({
+  await mutateState((s) => ({
     ...s,
     members: [...s.members, { id: mid, name: trimmed }],
   }));
-
+  revalidate();
   return ok({ mid });
 }
 
 export async function deleteMember(mid: string): Promise<ActionResult> {
-  mutate((s) => {
+  await mutateState((s) => {
     const nextKrs: typeof s.krs = {};
     for (const [kid, wrapper] of Object.entries(s.krs)) {
       nextKrs[kid] = {
         ...wrapper,
-        data: {
-          ...wrapper.data,
-          owners: wrapper.data.owners.filter((o) => o !== mid),
-        },
+        data: { ...wrapper.data, owners: wrapper.data.owners.filter((o) => o !== mid) },
       };
     }
     const nextRetros = { ...s.retros };
     for (const key of Object.keys(nextRetros)) {
       if (key.endsWith(`:${mid}`)) delete nextRetros[key];
     }
-    return {
-      ...s,
-      members: s.members.filter((m) => m.id !== mid),
-      krs: nextKrs,
-      retros: nextRetros,
-    };
+    return { ...s, members: s.members.filter((m) => m.id !== mid), krs: nextKrs, retros: nextRetros };
   });
-
+  revalidate();
   return ok();
+}
+
+/* ─── Seed / Reset / Export / Import (server-side) ─────── */
+export async function loadSampleDataAction(): Promise<ActionResult> {
+  const { sampleState } = await import('@/lib/seed');
+  await writeState(sampleState);
+  revalidate();
+  return ok();
+}
+
+export async function resetDataAction(): Promise<ActionResult> {
+  const { resetState } = await import('@/lib/storage');
+  await resetState();
+  revalidate();
+  return ok();
+}
+
+export async function exportJsonAction(): Promise<ActionResult<{ json: string }>> {
+  const { exportJson } = await import('@/lib/storage');
+  return ok({ json: await exportJson() });
+}
+
+export async function importJsonAction(json: string): Promise<ActionResult> {
+  const { importJson } = await import('@/lib/storage');
+  const r = await importJson(json);
+  if (!r.ok) return err(r.error);
+  revalidate();
+  return ok();
+}
+
+/* Final Score 자동 평가는 KR 데이터로 파생되므로 별도 액션 없음 */
+export async function updateFinalScore(): Promise<ActionResult> {
+  return err('점수표는 자동 평가로 변경되어 직접 수정이 불가합니다.');
 }
