@@ -43,14 +43,17 @@ export function QuarterMetaBar({
   }
 
   return (
-    <div className="px-8 py-5">
-      <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3">
-        <h1 className="text-heading-xl text-text-primary num">{quarter.name}</h1>
-        <span className="text-body-md text-text-tertiary num">
-          {formatDate(quarter.start_date)} ~ {formatDate(quarter.end_date)}
-        </span>
+    <div className="px-8 py-8">
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+        <div>
+          <span className="text-label-md text-text-tertiary uppercase mb-2 block">현재 분기</span>
+          <h1 className="text-heading-xl text-text-primary num leading-none">{quarter.name}</h1>
+          <span className="text-body-sm text-text-tertiary num mt-2 block">
+            {formatDate(quarter.start_date)} ~ {formatDate(quarter.end_date)}
+          </span>
+        </div>
 
-        <div className="no-print ml-auto flex items-center gap-2 bg-bg-surface2 rounded-full pl-3 pr-2 py-1.5">
+        <div className="no-print flex items-center gap-2 bg-bg-surface2 rounded-full pl-4 pr-3 py-2">
           <Calendar size={14} className="text-text-tertiary" />
           <label className="text-label-md text-text-tertiary">기준 날짜</label>
           <input
@@ -63,10 +66,13 @@ export function QuarterMetaBar({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3 px-5 py-4 bg-bg-surface1 rounded-2xl border border-border-subtle">
         <MetaItem label="경과율" value={`${progress}%`} />
+        <Divider />
         <MetaItem label="현재 주차" value={`${week}주차`} />
+        <Divider />
         <MetaItem label="남은 기간" value={`${weeksLeft}주`} />
+        <Divider />
         <MetaItem
           label="이번 주 갱신"
           value={`${update.done}/${update.total}`}
@@ -75,6 +81,10 @@ export function QuarterMetaBar({
       </div>
     </div>
   );
+}
+
+function Divider() {
+  return <span className="w-px h-5 bg-border-subtle hidden sm:inline-block" />;
 }
 
 function MetaItem({

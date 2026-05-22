@@ -20,12 +20,13 @@ export function KPTSection({
 
   return (
     <section className="px-8 mt-12 mb-16">
-      <div className="mb-5">
-        <h2 className="text-heading-lg text-text-primary mb-1">KPT 회고</h2>
-        <p className="text-body-sm text-text-tertiary">
-          멤버별로 Keep / Problem / Try를 기록합니다.
-        </p>
+      <div className="flex items-center gap-3 mb-3">
+        <span className="w-1 h-7 bg-status-success rounded-full" />
+        <h2 className="text-heading-md text-text-primary">KPT 회고</h2>
       </div>
+      <p className="text-body-sm text-text-tertiary mb-5">
+        멤버별로 Keep / Problem / Try를 기록합니다.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
         {members.map((m) => (
           <KPTCard

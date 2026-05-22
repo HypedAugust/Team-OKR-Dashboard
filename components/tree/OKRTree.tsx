@@ -30,7 +30,12 @@ export function OKRTree({
 
   return (
     <div className="px-8">
-      {objectives.map((o) => (
+      {/* 섹션 헤더 */}
+      <div className="flex items-center gap-3 mb-6">
+        <span className="w-1 h-7 bg-status-success rounded-full" />
+        <h2 className="text-heading-md text-text-primary">OKR 진행 현황</h2>
+      </div>
+      {objectives.map((o, i) => (
         <ObjectiveSection
           key={o.id}
           qid={qid}
@@ -38,6 +43,7 @@ export function OKRTree({
           krs={o.krs}
           members={members}
           readOnly={readOnly}
+          index={i + 1}
         />
       ))}
       {!readOnly && (

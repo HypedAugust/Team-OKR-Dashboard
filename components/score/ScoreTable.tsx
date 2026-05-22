@@ -63,14 +63,15 @@ export function ScoreTable({
 
   return (
     <section className="px-8 mt-12">
+      <div className="flex items-center gap-3 mb-3">
+        <span className="w-1 h-7 bg-status-success rounded-full" />
+        <h2 className="text-heading-md text-text-primary">분기 점수표</h2>
+      </div>
       <div className="mb-5 flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <h2 className="text-heading-lg text-text-primary mb-1">분기 점수표</h2>
-          <p className="text-body-sm text-text-tertiary">
-            진척도 기반 자동 평가 · Aspire ≥ 60% · Commit ≥ 100%
-          </p>
-        </div>
-        <div className="flex items-baseline gap-2 px-4 py-2 bg-bg-surface2 rounded-lg">
+        <p className="text-body-sm text-text-tertiary">
+          진척도 기반 자동 평가 · Aspire ≥ 60% · Commit ≥ 100%
+        </p>
+        <div className="flex items-baseline gap-2 px-4 py-2 bg-bg-surface2 rounded-full">
           <span className="text-label-md text-text-tertiary">달성</span>
           <span className="text-heading-md text-text-primary num">
             {successCount}/{allKrs.length}
@@ -81,7 +82,7 @@ export function ScoreTable({
         </div>
       </div>
 
-      <div className="bg-bg-surface1 rounded-xl border border-border-subtle overflow-hidden">
+      <div className="bg-bg-surface1 rounded-2xl border border-border-subtle overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-bg-surface2 text-label-md text-text-tertiary">

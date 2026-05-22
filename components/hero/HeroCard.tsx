@@ -8,7 +8,7 @@ const accentBg: Record<StatusColor, string> = {
   idle: 'bg-accent-bg-idle',
 };
 
-const accentStripe: Record<StatusColor, string> = {
+const accentDot: Record<StatusColor, string> = {
   success: 'bg-status-success',
   warning: 'bg-status-warning',
   danger: 'bg-status-danger',
@@ -32,46 +32,26 @@ export function HeroCard({
   color = 'idle',
   extra,
 }: HeroCardProps) {
-  if (variant === 'signature') {
-    return (
-      <div
-        className={`relative ${accentBg[color]} rounded-xl p-7 min-h-[200px] flex flex-col justify-between overflow-hidden`}
-      >
-        <div className={`absolute top-0 left-0 h-full w-1.5 ${accentStripe[color]}`} />
-        <div>
-          <div className="text-label-md text-text-tertiary uppercase tracking-wide mb-2">
-            {label}
-          </div>
-          <div className="text-display-hero text-text-primary num leading-none">
-            {value}
-          </div>
-        </div>
-        {(hint || extra) && (
-          <div className="flex items-center justify-between mt-4">
-            {hint && <span className="text-body-sm text-text-secondary num">{hint}</span>}
-            {extra}
-          </div>
-        )}
-      </div>
-    );
-  }
+  const isSignature = variant === 'signature';
 
   return (
-    <div className="bg-bg-surface1 rounded-xl p-7 min-h-[200px] flex flex-col justify-between border border-border-subtle">
-      <div>
-        <div className="text-label-md text-text-tertiary uppercase tracking-wide mb-2">
-          {label}
-        </div>
-        <div className="flex items-baseline gap-3">
-          <div className="text-display-hero text-text-primary num leading-none">
-            {value}
-          </div>
-          {extra}
-        </div>
+    <div
+      className={`relative rounded-2xl p-7 h-[220px] flex flex-col justify-between overflow-hidden ${
+        isSignature ? accentBg[color] : 'bg-bg-surface1 border border-border-subtle'
+      }`}
+    >
+      {/* 상단 라벨 + 상태 도트 */}
+      <div className="flex items-center justify-between">
+        <span className="text-label-md text-text-tertiary uppercase">{label}</span>
+        <span className={`w-2 h-2 rounded-full ${accentDot[color]}`} />
       </div>
-      {hint && (
-        <div className="text-body-sm text-text-tertiary num mt-4">{hint}</div>
-      )}
+
+      {/* 가운데 큰 값 */}
+      <div className="flex flex-col gap-1.5">
+        <div className="text-display-lg text-text-primary num leading-none">{value}</div>
+        {hint && <span className="text-body-sm text-text-tertiary num">{hint}</span>}
+        {extra}
+      </div>
     </div>
   );
 }

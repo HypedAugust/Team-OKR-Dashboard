@@ -49,14 +49,14 @@ export function KRCard({
     return (
       <>
         <div
-          className={`kr-card relative bg-bg-surface1 rounded-xl pl-6 pr-5 py-5 border border-border-subtle ${
+          className={`kr-card relative bg-bg-surface1 rounded-2xl pl-6 pr-5 py-5 border border-border-subtle min-h-[460px] flex flex-col ${
             readOnly ? 'opacity-90' : 'hover:border-border-default cursor-pointer transition-colors'
           }`}
           onClick={() => {
             if (!readOnly) setEditing(true);
           }}
         >
-          <div className={`absolute top-0 left-0 w-1.5 h-full rounded-l-xl ${stripe}`} />
+          <div className={`absolute top-0 left-0 w-1.5 h-full rounded-l-2xl ${stripe}`} />
 
           {/* 헤더: 유형 + 삭제 */}
           <div className="flex items-start justify-between gap-3 mb-3">
@@ -112,8 +112,8 @@ export function KRCard({
             )}
           </div>
 
-          {/* 신뢰도 + Owner + 갱신/상태 */}
-          <div className="space-y-3 pt-3 border-t border-border-subtle">
+          {/* 신뢰도 + Owner + 갱신/상태 (하단 고정) */}
+          <div className="space-y-3 pt-3 border-t border-border-subtle mt-auto">
             <div className="flex items-center justify-between">
               <span className="text-label-md text-text-tertiary">신뢰도</span>
               <ConfidenceLight value={kr.confidence} />

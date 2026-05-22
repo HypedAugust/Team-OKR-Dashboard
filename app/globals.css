@@ -126,12 +126,12 @@ button {
     color: #94a3b8 !important;
   }
 
-  /* ─── Status colors ─── */
+  /* ─── Status colors (라임/오렌지 톤) ─── */
   .text-status-success {
-    color: #15803d !important;
+    color: #4d7a00 !important;
   }
   .text-status-warning {
-    color: #a16207 !important;
+    color: #b45309 !important;
   }
   .text-status-danger {
     color: #b91c1c !important;
@@ -140,10 +140,10 @@ button {
     color: #6b7280 !important;
   }
   .bg-status-success {
-    background: #16a34a !important;
+    background: #84cc16 !important;
   }
   .bg-status-warning {
-    background: #eab308 !important;
+    background: #ea580c !important;
   }
   .bg-status-danger {
     background: #dc2626 !important;
@@ -152,12 +152,12 @@ button {
     background: #9ca3af !important;
   }
   .bg-status-success-soft {
-    background: #dcfce7 !important;
-    color: #14532d !important;
+    background: #ecfccb !important;
+    color: #365314 !important;
   }
   .bg-status-warning-soft {
-    background: #fef3c7 !important;
-    color: #78350f !important;
+    background: #ffedd5 !important;
+    color: #7c2d12 !important;
   }
   .bg-status-danger-soft {
     background: #fee2e2 !important;
@@ -170,12 +170,12 @@ button {
 
   /* ─── Hero signature card backgrounds ─── */
   .bg-accent-bg-success {
-    background: #d1fae5 !important;
-    color: #14532d !important;
+    background: #ecfccb !important;
+    color: #365314 !important;
   }
   .bg-accent-bg-warning {
-    background: #fef3c7 !important;
-    color: #78350f !important;
+    background: #ffedd5 !important;
+    color: #7c2d12 !important;
   }
   .bg-accent-bg-danger {
     background: #fee2e2 !important;
