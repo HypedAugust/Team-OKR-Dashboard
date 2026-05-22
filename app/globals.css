@@ -279,6 +279,11 @@ button {
     break-inside: auto;
     page-break-inside: auto;
   }
+  /* Objective 헤더와 KR 그리드는 떨어지지 않게 — 헤더 다음에 break 금지 */
+  .objective-section > div:first-child {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
   /* 개별 카드는 안 쪼개짐 */
   .kr-card,
   .kpt-card,
@@ -291,6 +296,13 @@ button {
   h2 {
     break-after: avoid;
     page-break-after: avoid;
+  }
+
+  /* print:hidden을 확실히 — Tailwind 빌드 우선순위 보강 */
+  .print\:hidden,
+  .print\:\!hidden,
+  [data-no-print='true'] {
+    display: none !important;
   }
 
   /* ─── Print-only report header (선택) ─── */

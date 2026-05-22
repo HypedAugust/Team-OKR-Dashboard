@@ -116,12 +116,12 @@ export function ObjectiveSection({
               {done}<span className="text-text-tertiary">/{total}</span>
             </span>
           </div>
-          {/* 화면용 도넛 — print에선 깨지므로 숨김 */}
-          <div className="print:hidden">
+          {/* 화면용 도넛 — print에선 깨지므로 강제 숨김 */}
+          <div className="print:!hidden" data-no-print="true">
             <ProgressCircle value={avg} color={color} size={56} strokeWidth={6} />
           </div>
-          {/* PDF용 — 단순 % 텍스트만 */}
-          <div className="hidden print:flex flex-col items-end">
+          {/* PDF용 — 단순 % 텍스트만 (화면에선 숨김) */}
+          <div className="hidden print:!flex flex-col items-end">
             <span className="text-caption text-text-tertiary">평균</span>
             <span className="text-heading-lg text-text-primary num">
               {Math.round(avg * 100)}%
