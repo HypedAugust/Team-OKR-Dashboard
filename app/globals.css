@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/PretendardVariable.woff2')
+    format('woff2-variations');
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #0A0A0B;
+  color: #FFFFFF;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+    'Helvetica Neue', sans-serif;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+/* tabular numerals for all numeric displays */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1C1C1F 0%,
+    #252529 50%,
+    #1C1C1F 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* focus visibility */
+*:focus-visible {
+  outline: 2px solid #5B8DEF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 50ms !important;
+    animation-duration: 50ms !important;
+  }
+}
+
+/* ─── Print / PDF mode ────────────────────────────────────── */
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #0A0A0B !important;
+  }
+  .no-print,
+  [data-no-print='true'] {
+    display: none !important;
+  }
+  .objective-section,
+  .kr-card,
+  .kpt-card,
+  .score-row {
+    break-inside: avoid;
+    background: #F9FAFB !important;
+    border: 1px solid #E5E7EB !important;
+    color: #0A0A0B !important;
+  }
+  .hero-summary {
+    break-after: page;
+  }
+  .text-text-primary {
+    color: #0A0A0B !important;
+  }
+  .text-text-secondary {
+    color: #1F2937 !important;
+  }
+  .text-text-tertiary {
+    color: #4B5563 !important;
+  }
+  .text-text-muted {
+    color: #6B7280 !important;
+  }
+  /* keep status colors but slightly muted for print */
+  .bg-status-success {
+    background: #16A862 !important;
+    color: #FFFFFF !important;
+  }
+  .bg-status-warning {
+    background: #D9A21B !important;
+    color: #0A0A0B !important;
+  }
+  .bg-status-danger {
+    background: #E04A3A !important;
+    color: #FFFFFF !important;
+  }
+  .bg-accent-bg-success {
+    background: #D1FAE5 !important;
+    color: #064E3B !important;
+  }
+  .bg-accent-bg-warning {
+    background: #FEF3C7 !important;
+    color: #78350F !important;
+  }
+  .bg-accent-bg-danger {
+    background: #FEE2E2 !important;
+    color: #7F1D1D !important;
+  }
+  .bg-accent-bg-idle {
+    background: #F3F4F6 !important;
+    color: #374151 !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 16mm;
+  }
+}

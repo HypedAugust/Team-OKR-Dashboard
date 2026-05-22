@@ -1,0 +1,20 @@
+node_modules
+.next
+.vercel
+.env
+.env.local
+.env*.local
+*.log
+.DS_Store
+next-env.d.ts
+
+# IDE / local
+.claude/
+.vscode/
+.idea/
+
+# Source materials not part of the app
+*.png
+*.jpg
+*.jpeg
+*.pdf
