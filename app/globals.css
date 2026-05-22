@@ -100,12 +100,14 @@ button {
     display: none !important;
   }
 
-  /* sticky 풀고 평범한 박스 */
+  /* sticky 풀고 평범한 박스, backdrop·shadow 모두 제거 */
   header {
     position: static !important;
     background: #ffffff !important;
-    border-bottom: 2px solid #1e293b !important;
-    padding: 16px 24px !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid #eaeaea !important;
+    padding: 6px 16px !important;
   }
 
   /* ─── Backgrounds ─── */
