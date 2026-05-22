@@ -27,7 +27,7 @@ export function KPTSection({
       <p className="text-body-sm text-text-tertiary mb-5">
         멤버별로 Keep / Problem / Try를 기록합니다.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
+      <div className="kpt-grid grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
         {members.map((m) => (
           <KPTCard
             key={m.id}

@@ -273,14 +273,13 @@ button {
   }
 
   /* ─── Page break rules ─── */
-  .hero-summary {
-    break-after: auto;
-    page-break-after: auto;
-  }
+  /* Objective는 쪼개도 OK (페이지 효율 우선) */
+  .hero-summary,
   .objective-section {
-    break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: auto;
+    page-break-inside: auto;
   }
+  /* 개별 카드는 안 쪼개짐 */
   .kr-card,
   .kpt-card,
   .score-row,
@@ -441,11 +440,254 @@ button {
 
   /* 헤더 컴팩트 */
   header {
-    padding: 8px 16px !important;
+    padding: 6px 16px !important;
   }
   header svg {
-    height: 24px !important;
+    height: 20px !important;
     width: auto !important;
+  }
+
+  /* ─── 추가 강제 압축 — 3페이지 목표 ─── */
+
+  /* 모든 px-8을 px-3으로 (좌우 여백 절약) */
+  .px-8 {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* 메타바 — 한 줄 가까이 */
+  .meta-bar {
+    padding: 4px 8px !important;
+  }
+  .meta-bar > div {
+    margin-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  .meta-bar > div + div {
+    padding: 4px 6px !important;
+  }
+  .meta-bar .text-label-md,
+  .meta-bar .text-body-md,
+  .meta-bar .text-body-lg {
+    font-size: 10px !important;
+    line-height: 13px !important;
+  }
+  .meta-bar h1 {
+    font-size: 18px !important;
+    line-height: 22px !important;
+    margin: 0 !important;
+  }
+  .meta-bar .uppercase {
+    margin-bottom: 0 !important;
+  }
+
+  /* Hero 카드 더 작게 */
+  .hero-summary [class*='h-[220px]'],
+  .hero-summary .h-\[220px\] {
+    height: auto !important;
+    min-height: 80px !important;
+    padding: 8px 10px !important;
+  }
+  .hero-summary .text-display-lg {
+    font-size: 22px !important;
+    line-height: 24px !important;
+  }
+  .hero-summary .text-label-md {
+    font-size: 9px !important;
+    letter-spacing: 0.04em !important;
+  }
+  .hero-summary .text-body-sm {
+    font-size: 10px !important;
+    line-height: 12px !important;
+  }
+  .hero-summary .text-caption {
+    font-size: 9px !important;
+    line-height: 11px !important;
+  }
+  /* 임계값 돌파 배지 작게 */
+  .hero-summary .text-label-sm {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+  /* 진척도 바 작게 */
+  .hero-summary .h-2\.5 {
+    height: 6px !important;
+  }
+
+  /* 섹션 헤더 더 작게 */
+  section > div:first-child {
+    margin-bottom: 4px !important;
+    gap: 6px !important;
+  }
+  section > div:first-child h2 {
+    font-size: 13px !important;
+    line-height: 16px !important;
+  }
+  section > div:first-child .text-body-sm,
+  section > div:first-child p {
+    font-size: 10px !important;
+  }
+
+  /* 섹션 간 마진 최소 */
+  section.objective-section,
+  section.hero-summary,
+  section.px-8 {
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+  }
+  section.px-8.mt-12 {
+    margin-top: 8px !important;
+  }
+  section.px-8.mb-16 {
+    margin-bottom: 0 !important;
+  }
+
+  /* Objective 헤더 카드 — 한 줄 가깝게 */
+  .objective-section > div:first-child {
+    padding: 6px 10px !important;
+    margin-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  .objective-section > div:first-child h2 {
+    font-size: 12px !important;
+    line-height: 15px !important;
+  }
+  .objective-section > div:first-child .text-label-md,
+  .objective-section > div:first-child .text-caption {
+    font-size: 9px !important;
+    margin-bottom: 1px !important;
+  }
+  .objective-section > div:first-child .text-heading-lg {
+    font-size: 14px !important;
+    line-height: 16px !important;
+  }
+  .objective-section > div:first-child svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* KR 카드 — 매우 컴팩트 */
+  .kr-card {
+    min-height: 0 !important;
+    padding: 6px 8px 6px 12px !important;
+    border-radius: 8px !important;
+  }
+  .kr-card > div:first-child + div {
+    margin-bottom: 3px !important;
+  }
+  .kr-card .text-heading-md {
+    font-size: 11px !important;
+    line-height: 14px !important;
+    min-height: 0 !important;
+    margin-bottom: 3px !important;
+  }
+  /* KR 인쇄용 진척도 바 영역 */
+  .kr-card .print\\:block,
+  .kr-card .hidden.print\\:block {
+    margin: 2px 0 !important;
+  }
+  .kr-card .print\\:block [style*='font-size: 22px'],
+  .kr-card .print\\:block [style*='font-size:22px'] {
+    font-size: 16px !important;
+    line-height: 18px !important;
+  }
+  /* 하단 신뢰도/owner/갱신 */
+  .kr-card .mt-auto {
+    margin-top: 4px !important;
+  }
+  .kr-card .pt-3,
+  .kr-card .border-t {
+    padding-top: 3px !important;
+    border-top-width: 1px !important;
+  }
+  .kr-card .space-y-3 > * + * {
+    margin-top: 3px !important;
+  }
+  .kr-card .text-label-md,
+  .kr-card .text-body-sm,
+  .kr-card .text-caption {
+    font-size: 9px !important;
+    line-height: 11px !important;
+  }
+  /* TypeBadge·StatusBadge·OwnerChip 작게 */
+  .kr-card .text-label-sm {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+  .kr-card svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+  /* 신뢰도 dot */
+  .kr-card .w-2 {
+    width: 5px !important;
+    height: 5px !important;
+  }
+  .kr-card .w-2\\.5 {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  /* 좌측 stripe 얇게 */
+  .kr-card > div[class*='top-0'][class*='left-0'][class*='w-1\\.5'] {
+    width: 3px !important;
+  }
+
+  /* 점수표 — 매우 컴팩트 */
+  .score-row td,
+  thead tr th {
+    padding: 3px 6px !important;
+    font-size: 10px !important;
+    line-height: 13px !important;
+  }
+  .score-row .text-label-sm {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+  .score-row .text-caption {
+    font-size: 8px !important;
+  }
+  .score-row .flex.flex-col.gap-1 {
+    gap: 1px !important;
+  }
+
+  /* KPT 카드 컴팩트 + 4열 (멤버 4명일 때) */
+  .kpt-card {
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+  }
+  .kpt-card .text-heading-md {
+    font-size: 11px !important;
+    line-height: 14px !important;
+  }
+  .kpt-card .mb-4,
+  .kpt-card .pb-3 {
+    margin-bottom: 3px !important;
+    padding-bottom: 3px !important;
+  }
+  .kpt-card .space-y-4 > * + * {
+    margin-top: 4px !important;
+  }
+  .kpt-card .text-label-sm {
+    font-size: 9px !important;
+  }
+  .kpt-card .text-body-md {
+    font-size: 10px !important;
+    line-height: 13px !important;
+  }
+  .kpt-card .w-7 {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  /* KPT 그리드 4열 강제 */
+  .kpt-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  /* 빈 textarea 자리 보존 안 함 */
+  .kpt-card textarea,
+  .score-row textarea {
+    display: none !important;
   }
 }
 
