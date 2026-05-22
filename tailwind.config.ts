@@ -17,8 +17,8 @@ const config: Config = {
         text: {
           primary: '#FFFFFF',
           secondary: '#E5E5E7',
-          tertiary: '#9CA3AF',
-          muted: '#6B7280',
+          tertiary: '#A1A8B3',
+          muted: '#7A8290',
         },
         status: {
           success: '#B4E600',           // 라임 그린 (메인 액센트)
@@ -73,13 +73,13 @@ const config: Config = {
         'display-lg':   ['48px', { lineHeight: '52px', fontWeight: '800', letterSpacing: '-0.02em' }],
         'heading-xl':   ['32px', { lineHeight: '40px', fontWeight: '800', letterSpacing: '-0.01em' }],
         'heading-lg':   ['24px', { lineHeight: '32px', fontWeight: '700' }],
-        'heading-md':   ['18px', { lineHeight: '26px', fontWeight: '700' }],
+        'heading-md':   ['20px', { lineHeight: '28px', fontWeight: '800', letterSpacing: '-0.005em' }],
         'body-lg':      ['16px', { lineHeight: '24px', fontWeight: '500' }],
         'body-md':      ['14px', { lineHeight: '22px', fontWeight: '400' }],
         'body-sm':      ['13px', { lineHeight: '20px', fontWeight: '400' }],
-        'label-md':     ['12px', { lineHeight: '16px', fontWeight: '600', letterSpacing: '0.06em' }],
-        'label-sm':     ['11px', { lineHeight: '14px', fontWeight: '700', letterSpacing: '0.04em' }],
-        'caption':      ['12px', { lineHeight: '16px', fontWeight: '400' }],
+        'label-md':     ['13px', { lineHeight: '18px', fontWeight: '700', letterSpacing: '0.04em' }],
+        'label-sm':     ['13px', { lineHeight: '16px', fontWeight: '700', letterSpacing: '0.02em' }],
+        'caption':      ['12px', { lineHeight: '16px', fontWeight: '500' }],
       },
       transitionTimingFunction: {
         smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',

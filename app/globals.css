@@ -305,21 +305,133 @@ button {
     print-color-adjust: exact !important;
   }
 
-  /* Page setup */
+  /* Page setup - 가로 방향으로 정보 밀도 확보 */
   @page {
-    size: A4 portrait;
-    margin: 14mm 12mm;
+    size: A4 landscape;
+    margin: 10mm 12mm;
   }
 
-  /* KR 카드 그리드 — 인쇄 시 2열 강제로 폭 활용 */
+  /* ─── 컴팩트화: 페이지 수 줄이기 ─── */
+
+  /* Hero 카드 4개 무조건 한 줄 */
+  .hero-summary > div.grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .hero-summary [class*='h-[220px]'],
+  .hero-summary .h-\[220px\] {
+    height: auto !important;
+    min-height: 110px !important;
+    padding: 12px 14px !important;
+  }
+  .hero-summary .text-display-lg {
+    font-size: 28px !important;
+    line-height: 30px !important;
+  }
+
+  /* 분기 메타바 컴팩트 */
+  .meta-bar {
+    padding-top: 4px !important;
+    padding-bottom: 8px !important;
+  }
+  .meta-bar h1 {
+    font-size: 22px !important;
+    line-height: 26px !important;
+  }
+  .meta-bar .text-label-md {
+    margin-bottom: 0 !important;
+  }
+
+  /* 섹션 헤더 작게 */
+  section h2 {
+    font-size: 16px !important;
+    line-height: 22px !important;
+  }
+  section > div:first-child {
+    margin-bottom: 8px !important;
+  }
+
+  /* 섹션 간 마진 줄임 */
+  section.objective-section {
+    margin-bottom: 16px !important;
+  }
+  section.hero-summary {
+    margin-bottom: 14px !important;
+  }
+  .px-8 + section,
+  section.px-8 {
+    margin-top: 14px !important;
+  }
+
+  /* KR 카드 — 가로 3열, 컴팩트 */
   .objective-section .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .kr-card {
+    min-height: 0 !important;
+    padding: 12px 14px 12px 18px !important;
+    page-break-inside: avoid;
+  }
+  .kr-card .text-heading-md {
+    font-size: 14px !important;
+    line-height: 18px !important;
+    min-height: 0 !important;
+    margin-bottom: 6px !important;
+  }
+  /* 원형 게이지 작게 */
+  .kr-card svg[width='180'] {
+    width: 88px !important;
+    height: 88px !important;
+  }
+  .kr-card [style*='fontSize: 44px'],
+  .kr-card [style*='font-size:44px'],
+  .kr-card [style*='font-size: 44px'] {
+    font-size: 20px !important;
   }
 
-  /* KPT 그리드도 2열 */
+  /* Objective 헤더 카드 컴팩트 */
+  .objective-section > div:first-child {
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+  }
+  .objective-section > div:first-child h2 {
+    font-size: 14px !important;
+    line-height: 18px !important;
+  }
+  .objective-section > div:first-child svg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* 점수표 행 컴팩트 */
+  .score-row td {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+  thead tr th {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  /* KPT 그리드 3열 + 컴팩트 */
   .kpt-card {
     page-break-inside: avoid;
+    padding: 10px 12px !important;
+  }
+  section .grid.md\\:grid-cols-2,
+  section .grid.\\32 xl\\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  /* 헤더 컴팩트 */
+  header {
+    padding: 8px 16px !important;
+  }
+  header svg {
+    height: 24px !important;
+    width: auto !important;
   }
 }
 

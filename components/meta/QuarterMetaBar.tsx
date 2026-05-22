@@ -43,7 +43,7 @@ export function QuarterMetaBar({
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="meta-bar px-8 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
         <div>
           <span className="text-label-md text-text-tertiary uppercase mb-2 block">현재 분기</span>

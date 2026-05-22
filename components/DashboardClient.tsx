@@ -88,6 +88,7 @@ export function DashboardClient({ bundle }: { bundle: QuarterBundle }) {
             <HeroSummary
               quarter={quarter}
               krs={objectives.flatMap((o) => o.krs)}
+              members={members}
               viewDate={viewDate}
             />
           </div>

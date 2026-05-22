@@ -15,12 +15,21 @@ const accentDot: Record<StatusColor, string> = {
   idle: 'bg-status-idle',
 };
 
+const accentFill: Record<StatusColor, string> = {
+  success: 'bg-status-success',
+  warning: 'bg-status-warning',
+  danger: 'bg-status-danger',
+  idle: 'bg-text-tertiary',
+};
+
 interface HeroCardProps {
   label: string;
   value: string;
   hint?: string;
   variant?: 'signature' | 'plain';
   color?: StatusColor;
+  /** 0..1 사이 값 — 카드 하단 미니 바 표시 */
+  progress?: number;
   extra?: ReactNode;
 }
 
@@ -30,9 +39,11 @@ export function HeroCard({
   hint,
   variant = 'plain',
   color = 'idle',
+  progress,
   extra,
 }: HeroCardProps) {
   const isSignature = variant === 'signature';
+  const pct = progress !== undefined ? Math.max(0, Math.min(1, progress)) * 100 : null;
 
   return (
     <div
@@ -43,7 +54,7 @@ export function HeroCard({
       {/* 상단 라벨 + 상태 도트 */}
       <div className="flex items-center justify-between">
         <span className="text-label-md text-text-tertiary uppercase">{label}</span>
-        <span className={`w-2 h-2 rounded-full ${accentDot[color]}`} />
+        <span className={`w-2.5 h-2.5 rounded-full ${accentDot[color]}`} />
       </div>
 
       {/* 가운데 큰 값 */}
@@ -52,6 +63,16 @@ export function HeroCard({
         {hint && <span className="text-body-sm text-text-tertiary num">{hint}</span>}
         {extra}
       </div>
+
+      {/* 하단 미니 진척도 바 */}
+      {pct !== null && (
+        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-bg-surface3/60">
+          <div
+            className={`h-full ${accentFill[color]} transition-[width] duration-700 ease-smooth`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
