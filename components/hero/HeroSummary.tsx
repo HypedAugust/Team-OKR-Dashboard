@@ -5,13 +5,15 @@ import {
   confidenceColor,
   doneCount,
   formatPercent,
+  krDisplayStatus,
   progressColor,
   quarterProgress,
 } from '@/lib/calc';
-import { CONFIDENCE_LABEL } from '@/lib/constants';
+import { ACHIEVEMENT_THRESHOLDS, CONFIDENCE_LABEL } from '@/lib/constants';
 import type { KR, Member, Quarter } from '@/lib/types';
 import { HeroCard } from './HeroCard';
 import { RiskAlertChip } from './RiskAlertChip';
+import { QuarterVerdictBanner } from './QuarterVerdictBanner';
 
 export function HeroSummary({
   quarter,
@@ -36,17 +38,28 @@ export function HeroSummary({
   const confColor = confidenceColor(conf);
 
   const qProgress = Math.round(quarterProgress(quarter.start_date, quarter.end_date, now) * 100);
-
-  // 진척도 vs 분기 경과율 갭 (음수면 뒤처짐)
   const paceGap = Math.round(avg * 100) - qProgress;
+
+  // 임계값 — Aspire 60%를 기본으로 (대부분의 KR이 Aspire이므로)
+  const threshold = ACHIEVEMENT_THRESHOLDS.Aspire;
+  const thresholdPassed = avg >= threshold;
+
+  // 위험 KR 카운트
+  const riskCount = krs.filter((kr) => krDisplayStatus(kr) === 'risk').length;
 
   return (
     <section className="hero-summary px-8">
-      {/* 섹션 헤더 — 위험 알림 인라인 */}
+      {/* 섹션 헤더 — 종합 상태 배너 + 위험 알림 인라인 */}
       <div className="flex flex-wrap items-center gap-3 mb-5 justify-between">
         <div className="flex items-center gap-3">
           <span className="w-1.5 h-7 bg-status-success rounded-full" />
           <h2 className="text-heading-md text-text-primary">이번 분기 요약</h2>
+          <QuarterVerdictBanner
+            doneCount={done}
+            totalCount={total}
+            quarterProgressPct={qProgress}
+            riskCount={riskCount}
+          />
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <RiskAlertChip krs={krs} members={members} />
@@ -69,6 +82,8 @@ export function HeroSummary({
               : `경과율(${qProgress}%) 대비 ${paceGap}%p 뒤처짐`
           }
           progress={avg}
+          threshold={threshold}
+          thresholdPassed={thresholdPassed}
         />
         <HeroCard
           variant="plain"
@@ -76,7 +91,6 @@ export function HeroSummary({
           label="달성 KR"
           value={`${done}/${total}`}
           hint={total > 0 ? `${Math.round((done / total) * 100)}% 달성` : '—'}
-          progress={total > 0 ? done / total : 0}
         />
         <HeroCard
           variant="plain"
@@ -91,7 +105,6 @@ export function HeroSummary({
           label="분기 경과율"
           value={`${qProgress}%`}
           hint={`${quarter.start_date} ~ ${quarter.end_date}`}
-          progress={qProgress / 100}
         />
       </div>
     </section>
