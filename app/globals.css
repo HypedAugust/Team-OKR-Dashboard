@@ -561,10 +561,7 @@ button {
     font-size: 14px !important;
     line-height: 16px !important;
   }
-  .objective-section > div:first-child svg {
-    width: 28px !important;
-    height: 28px !important;
-  }
+  /* Objective 헤더의 도넛 svg는 print에서 컴포넌트 레벨에서 hidden 처리됨 */
 
   /* KR 카드 — 매우 컴팩트 */
   .kr-card {
