@@ -83,8 +83,8 @@ export function KRCard({
             {kr.target_text || <span className="text-text-muted">목표를 입력하세요</span>}
           </div>
 
-          {/* 중앙 큰 원형 게이지 */}
-          <div className="flex flex-col items-center my-6">
+          {/* 화면용: 중앙 큰 원형 게이지 */}
+          <div className="print:hidden flex flex-col items-center my-6">
             <ProgressCircle
               value={kr.progress}
               color={color}
@@ -92,7 +92,7 @@ export function KRCard({
               strokeWidth={14}
               centerContent={
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-display-hero text-text-primary num leading-none" style={{ fontSize: '44px' }}>
+                  <span className="text-text-primary num leading-none font-extrabold" style={{ fontSize: '44px' }}>
                     {Math.round(kr.progress * 100)}%
                   </span>
                   {kr.target_value !== null && kr.target_value > 0 ? (
@@ -107,6 +107,44 @@ export function KRCard({
             />
             {kr.current_detail && (
               <div className="mt-3 text-body-sm text-text-tertiary text-center break-words max-w-full px-2">
+                {kr.current_detail}
+              </div>
+            )}
+          </div>
+
+          {/* PDF용: 가로 진척도 바 + 큰 % */}
+          <div className="hidden print:block my-2">
+            <div className="flex items-baseline justify-between mb-1.5">
+              <span className="text-text-primary num font-extrabold" style={{ fontSize: '22px', lineHeight: '24px' }}>
+                {Math.round(kr.progress * 100)}%
+              </span>
+              {kr.target_value !== null && kr.target_value > 0 ? (
+                <span className="text-text-tertiary num" style={{ fontSize: '11px' }}>
+                  {kr.current_value} / {kr.target_value}
+                </span>
+              ) : (
+                <span className="text-text-muted" style={{ fontSize: '11px' }}>수동</span>
+              )}
+            </div>
+            <div
+              className="w-full rounded-full overflow-hidden"
+              style={{ height: '8px', background: '#E5E7EB' }}
+            >
+              <div
+                className={
+                  color === 'success' ? 'bg-status-success' :
+                  color === 'warning' ? 'bg-status-warning' :
+                  color === 'danger' ? 'bg-status-danger' :
+                  'bg-status-idle'
+                }
+                style={{
+                  width: `${Math.min(100, Math.round(kr.progress * 100))}%`,
+                  height: '100%',
+                }}
+              />
+            </div>
+            {kr.current_detail && (
+              <div className="text-text-tertiary break-words mt-1.5" style={{ fontSize: '11px', lineHeight: '14px' }}>
                 {kr.current_detail}
               </div>
             )}

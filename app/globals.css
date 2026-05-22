@@ -379,15 +379,16 @@ button {
     min-height: 0 !important;
     margin-bottom: 6px !important;
   }
-  /* 원형 게이지 작게 */
-  .kr-card svg[width='180'] {
-    width: 88px !important;
-    height: 88px !important;
+  /* KR 카드 푸터의 mt-auto 제거 — 빈 공간 만들지 않도록 */
+  .kr-card .mt-auto {
+    margin-top: 8px !important;
   }
-  .kr-card [style*='fontSize: 44px'],
-  .kr-card [style*='font-size:44px'],
-  .kr-card [style*='font-size: 44px'] {
-    font-size: 20px !important;
+  /* 신뢰도/Owner/갱신 영역 컴팩트 */
+  .kr-card .pt-3 {
+    padding-top: 6px !important;
+  }
+  .kr-card .space-y-3 > * + * {
+    margin-top: 6px !important;
   }
 
   /* Objective 헤더 카드 컴팩트 */
@@ -404,7 +405,20 @@ button {
     height: 36px !important;
   }
 
-  /* 점수표 행 컴팩트 */
+  /* 점수표 — 잘림 방지 */
+  section:has(table) {
+    page-break-inside: avoid;
+  }
+  table {
+    page-break-inside: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
   .score-row td {
     padding: 6px 10px !important;
     font-size: 11px !important;
