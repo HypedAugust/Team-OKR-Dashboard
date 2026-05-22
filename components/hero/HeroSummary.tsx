@@ -12,8 +12,16 @@ import { CONFIDENCE_LABEL } from '@/lib/constants';
 import type { KR, Quarter } from '@/lib/types';
 import { HeroCard } from './HeroCard';
 
-export function HeroSummary({ quarter, krs }: { quarter: Quarter; krs: KR[] }) {
-  const now = new Date();
+export function HeroSummary({
+  quarter,
+  krs,
+  viewDate,
+}: {
+  quarter: Quarter;
+  krs: KR[];
+  viewDate?: Date;
+}) {
+  const now = viewDate ?? new Date();
   const hasAnyUpdate = krs.some((k) => k.updated_at !== null);
   const avg = avgProgress(krs);
   const avgColor = progressColor(avg, hasAnyUpdate);

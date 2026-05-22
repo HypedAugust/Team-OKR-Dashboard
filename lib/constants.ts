@@ -24,9 +24,9 @@ export const TEXT_MAX_LENGTH = {
 } as const;
 
 export const CONFIDENCE_LABEL: Record<'high' | 'mid' | 'low', string> = {
-  high: '高',
-  mid: '中',
-  low: '低',
+  high: '상',
+  mid: '중',
+  low: '하',
 };
 
 export const CONFIDENCE_SCORE: Record<'high' | 'mid' | 'low', number> = {

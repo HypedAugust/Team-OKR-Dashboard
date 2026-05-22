@@ -22,6 +22,7 @@ export function DashboardClient() {
 
   const [hydrated, setHydrated] = useState(false);
   const [bundle, setBundle] = useState<QuarterBundle | null>(null);
+  const [viewDate, setViewDate] = useState<Date>(() => new Date());
 
   // hydrate from localStorage on mount
   useEffect(() => {
@@ -81,10 +82,19 @@ export function DashboardClient() {
         />
       ) : (
         <>
-          <QuarterMetaBar quarter={quarter} krs={objectives.flatMap((o) => o.krs)} />
+          <QuarterMetaBar
+            quarter={quarter}
+            krs={objectives.flatMap((o) => o.krs)}
+            viewDate={viewDate}
+            onChangeViewDate={setViewDate}
+          />
 
           <div className="mb-10">
-            <HeroSummary quarter={quarter} krs={objectives.flatMap((o) => o.krs)} />
+            <HeroSummary
+              quarter={quarter}
+              krs={objectives.flatMap((o) => o.krs)}
+              viewDate={viewDate}
+            />
           </div>
 
           {objectives.length === 0 && (

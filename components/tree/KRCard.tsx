@@ -12,7 +12,6 @@ import { useToast } from '@/components/ui/Toast';
 import { ConfirmDialog } from '@/components/modal/ConfirmDialog';
 import {
   formatDate,
-  isKRAchieved,
   krDisplayStatus,
   progressColor,
 } from '@/lib/calc';
@@ -59,6 +58,7 @@ export function KRCard({
         >
           <div className={`absolute top-0 left-0 w-1.5 h-full rounded-l-xl ${stripe}`} />
 
+          {/* 헤더: 유형 + 삭제 */}
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex items-center gap-2 flex-wrap">
               <TypeBadge type={kr.type} />
@@ -78,46 +78,42 @@ export function KRCard({
             )}
           </div>
 
-          <div className="text-heading-md text-text-primary mb-4 break-words leading-snug min-h-[3.25rem]">
+          {/* 목표 텍스트 */}
+          <div className="text-heading-md text-text-primary mb-5 break-words leading-snug min-h-[3.25rem]">
             {kr.target_text || <span className="text-text-muted">목표를 입력하세요</span>}
           </div>
 
-          {/* 원형 게이지 + 현재/목표 */}
-          <div className="flex items-center gap-4 mb-4">
-            <ProgressCircle value={kr.progress} color={color} size={84} strokeWidth={8} />
-            <div className="flex flex-col gap-1">
-              {kr.target_value !== null && kr.target_value > 0 ? (
-                <>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-heading-lg text-text-primary num">
-                      {kr.current_value}
+          {/* 중앙 큰 원형 게이지 */}
+          <div className="flex flex-col items-center my-6">
+            <ProgressCircle
+              value={kr.progress}
+              color={color}
+              size={180}
+              strokeWidth={14}
+              centerContent={
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-display-hero text-text-primary num leading-none" style={{ fontSize: '44px' }}>
+                    {Math.round(kr.progress * 100)}%
+                  </span>
+                  {kr.target_value !== null && kr.target_value > 0 ? (
+                    <span className="text-body-sm text-text-tertiary num">
+                      {kr.current_value} / {kr.target_value}
                     </span>
-                    <span className="text-body-md text-text-tertiary num">
-                      / {kr.target_value}
-                    </span>
-                  </div>
-                  {kr.current_detail && (
-                    <div className="text-body-sm text-text-tertiary break-words">
-                      {kr.current_detail}
-                    </div>
+                  ) : (
+                    <span className="text-caption text-text-muted">수동</span>
                   )}
-                </>
-              ) : (
-                <>
-                  <div className="text-body-md text-text-tertiary">
-                    수동 진척도
-                  </div>
-                  {kr.current_detail && (
-                    <div className="text-body-sm text-text-tertiary break-words">
-                      {kr.current_detail}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+                </div>
+              }
+            />
+            {kr.current_detail && (
+              <div className="mt-3 text-body-sm text-text-tertiary text-center break-words max-w-full px-2">
+                {kr.current_detail}
+              </div>
+            )}
           </div>
 
-          <div className="space-y-3">
+          {/* 신뢰도 + Owner + 갱신/상태 */}
+          <div className="space-y-3 pt-3 border-t border-border-subtle">
             <div className="flex items-center justify-between">
               <span className="text-label-md text-text-tertiary">신뢰도</span>
               <ConfidenceLight value={kr.confidence} />
@@ -132,7 +128,7 @@ export function KRCard({
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
+            <div className="flex items-center justify-between">
               <span className="text-caption text-text-muted">
                 갱신 <span className="num">{formatDate(kr.updated_at)}</span>
               </span>
