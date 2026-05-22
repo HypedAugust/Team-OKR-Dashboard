@@ -48,7 +48,7 @@ export function DashboardClient() {
     );
   }
 
-  const { quarter, quartersList, objectives, finalScores, retros, members } = bundle;
+  const { quarter, quartersList, objectives, retros, members } = bundle;
   const isReadOnly = !!quarter && quarter.status !== 'active';
   const hasNoData = !quarter;
 
@@ -118,12 +118,7 @@ export function DashboardClient() {
             readOnly={isReadOnly}
           />
 
-          <ScoreTable
-            qid={quarter.id}
-            objectives={objectives}
-            finalScores={finalScores}
-            readOnly={isReadOnly}
-          />
+          <ScoreTable objectives={objectives} />
 
           <KPTSection
             qid={quarter.id}

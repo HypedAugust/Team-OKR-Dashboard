@@ -1,52 +1,100 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { updateFinalScore, type ActionResult } from '@/app/actions';
+import { AlertTriangle, Check, Circle } from 'lucide-react';
 import { TypeBadge } from '@/components/ui/TypeBadge';
-import { useToast } from '@/components/ui/Toast';
-import type { FinalScore, KR, Objective } from '@/lib/types';
+import { isKRAchieved } from '@/lib/calc';
+import { ACHIEVEMENT_THRESHOLDS } from '@/lib/constants';
+import type { KR, Objective, StatusColor } from '@/lib/types';
+
+type Verdict = {
+  label: string;
+  color: StatusColor;
+  icon: React.ReactNode;
+  detail: string;
+};
+
+function evaluate(kr: KR): Verdict {
+  const threshold = ACHIEVEMENT_THRESHOLDS[kr.type];
+  const thresholdPct = Math.round(threshold * 100);
+  const achieved = isKRAchieved(kr);
+
+  if (achieved) {
+    return {
+      label: '성공',
+      color: 'success',
+      icon: <Check size={14} strokeWidth={2.5} />,
+      detail: `${kr.type} 기준 ${thresholdPct}% 달성`,
+    };
+  }
+  if (kr.progress > 0) {
+    return {
+      label: '진행 중',
+      color: 'warning',
+      icon: <AlertTriangle size={14} strokeWidth={2.5} />,
+      detail: `${kr.type} 성공 기준 ${thresholdPct}%`,
+    };
+  }
+  return {
+    label: '미시작',
+    color: 'idle',
+    icon: <Circle size={14} strokeWidth={2.5} />,
+    detail: '아직 갱신 없음',
+  };
+}
+
+function formatResult(kr: KR): string {
+  const pct = Math.round(kr.progress * 100);
+  if (kr.target_value !== null && kr.target_value > 0) {
+    const detailPart = kr.current_detail ? ` · ${kr.current_detail}` : '';
+    return `${pct}% (${kr.current_value} / ${kr.target_value})${detailPart}`;
+  }
+  return `${pct}%`;
+}
 
 export function ScoreTable({
-  qid,
   objectives,
-  finalScores,
-  readOnly,
 }: {
-  qid: string;
   objectives: Array<Objective & { krs: KR[] }>;
-  finalScores: Record<string, FinalScore>;
-  readOnly: boolean;
 }) {
   const allKrs = objectives.flatMap((o) => o.krs);
-
   if (allKrs.length === 0) return null;
+
+  const successCount = allKrs.filter(isKRAchieved).length;
 
   return (
     <section className="px-8 mt-12">
-      <div className="mb-5">
-        <h2 className="text-heading-lg text-text-primary mb-1">분기 점수표</h2>
-        <p className="text-body-sm text-text-tertiary">분기 종료 후 KR별 결과와 평가를 기록합니다.</p>
+      <div className="mb-5 flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-heading-lg text-text-primary mb-1">분기 점수표</h2>
+          <p className="text-body-sm text-text-tertiary">
+            진척도 기반 자동 평가 · Aspire ≥ 60% · Commit ≥ 100%
+          </p>
+        </div>
+        <div className="flex items-baseline gap-2 px-4 py-2 bg-bg-surface2 rounded-lg">
+          <span className="text-label-md text-text-tertiary">달성</span>
+          <span className="text-heading-md text-text-primary num">
+            {successCount}/{allKrs.length}
+          </span>
+          <span className="text-body-sm text-text-tertiary num">
+            ({allKrs.length > 0 ? Math.round((successCount / allKrs.length) * 100) : 0}%)
+          </span>
+        </div>
       </div>
+
       <div className="bg-bg-surface1 rounded-xl border border-border-subtle overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="bg-bg-surface2 text-label-md text-text-tertiary">
-              <th className="text-left px-4 py-3 w-24">KR</th>
+              <th className="text-left px-4 py-3 w-28">KR</th>
               <th className="text-left px-4 py-3 w-24">유형</th>
               <th className="text-left px-4 py-3">목표</th>
-              <th className="text-left px-4 py-3">결과</th>
-              <th className="text-left px-4 py-3">평가</th>
+              <th className="text-left px-4 py-3 w-72">결과</th>
+              <th className="text-left px-4 py-3 w-36">평가</th>
             </tr>
           </thead>
           <tbody>
             {allKrs.map((kr) => (
-              <ScoreRow
-                key={kr.id}
-                qid={qid}
-                kr={kr}
-                score={finalScores[kr.id]}
-                readOnly={readOnly}
-              />
+              <ScoreRow key={kr.id} kr={kr} />
             ))}
           </tbody>
         </table>
@@ -55,17 +103,15 @@ export function ScoreTable({
   );
 }
 
-function ScoreRow({
-  qid,
-  kr,
-  score,
-  readOnly,
-}: {
-  qid: string;
-  kr: KR;
-  score?: FinalScore;
-  readOnly: boolean;
-}) {
+const badgeBg: Record<StatusColor, string> = {
+  success: 'bg-status-success-soft text-status-success',
+  warning: 'bg-status-warning-soft text-status-warning',
+  danger: 'bg-status-danger-soft text-status-danger',
+  idle: 'bg-status-idle-soft text-text-tertiary',
+};
+
+function ScoreRow({ kr }: { kr: KR }) {
+  const verdict = evaluate(kr);
   return (
     <tr className="score-row border-t border-border-subtle">
       <td className="px-4 py-4 align-top">
@@ -78,73 +124,21 @@ function ScoreRow({
         <span className="text-body-md text-text-secondary">{kr.target_text || '—'}</span>
       </td>
       <td className="px-4 py-4 align-top">
-        <EditableCell
-          value={score?.result_text ?? ''}
-          placeholder="분기 종료 후 작성"
-          readOnly={readOnly}
-          onSave={(v) => updateFinalScore(qid, kr.id, { result_text: v })}
-        />
+        <span className="text-body-md text-text-primary num break-words">
+          {formatResult(kr)}
+        </span>
       </td>
       <td className="px-4 py-4 align-top">
-        <EditableCell
-          value={score?.evaluation ?? ''}
-          placeholder="분기 종료 후 작성"
-          readOnly={readOnly}
-          onSave={(v) => updateFinalScore(qid, kr.id, { evaluation: v })}
-        />
+        <div className="flex flex-col gap-1">
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm w-fit text-label-sm ${badgeBg[verdict.color]}`}
+          >
+            {verdict.icon}
+            {verdict.label}
+          </span>
+          <span className="text-caption text-text-muted">{verdict.detail}</span>
+        </div>
       </td>
     </tr>
-  );
-}
-
-function EditableCell({
-  value,
-  placeholder,
-  readOnly,
-  onSave,
-}: {
-  value: string;
-  placeholder: string;
-  readOnly: boolean;
-  onSave: (v: string) => Promise<ActionResult>;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(value);
-  const [, startTransition] = useTransition();
-  const toast = useToast();
-
-  if (readOnly) {
-    return (
-      <div className="text-body-md text-text-secondary whitespace-pre-wrap break-words min-h-[1.5rem]">
-        {value || <span className="text-text-muted">—</span>}
-      </div>
-    );
-  }
-
-  if (!editing) {
-    return (
-      <button
-        onClick={() => setEditing(true)}
-        className="text-left text-body-md text-text-secondary whitespace-pre-wrap break-words w-full min-h-[1.5rem] hover:text-text-primary transition-colors"
-      >
-        {value || <span className="text-text-muted">{placeholder}</span>}
-      </button>
-    );
-  }
-
-  return (
-    <textarea
-      autoFocus
-      value={text}
-      onChange={(e) => setText(e.target.value)}
-      onBlur={() => {
-        startTransition(async () => {
-          const r = await onSave(text);
-          if (!r.ok) toast.show(r.error, 'error');
-        });
-        setEditing(false);
-      }}
-      className="w-full px-2 py-1 bg-bg-surface3 border border-border-strong rounded-md text-text-primary text-body-md focus:outline-none resize-y min-h-[60px]"
-    />
   );
 }
