@@ -24,7 +24,7 @@ function trim(s: string | undefined, max: number): string {
 function ok<T>(data?: T): ActionResult<T> {
   return { ok: true, data };
 }
-function err(msg: string): ActionResult {
+function err<T = void>(msg: string): ActionResult<T> {
   return { ok: false, error: msg };
 }
 
