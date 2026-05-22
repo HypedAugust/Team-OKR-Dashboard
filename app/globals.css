@@ -82,6 +82,16 @@ button {
     color: #0f172a !important;
   }
 
+  /* ─── 폰트 강제: 모든 요소를 고딕(sans-serif)으로 ─── */
+  *,
+  *::before,
+  *::after {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont,
+      'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕',
+      'Nanum Gothic', system-ui, 'Helvetica Neue', sans-serif !important;
+  }
+  /* tabular-num만 유지하는 .num 클래스는 폰트는 그대로 + 숫자 폭만 고정 */
+
   /* 인쇄 시 숨김 */
   .no-print,
   [data-no-print='true'],
