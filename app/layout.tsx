@@ -3,8 +3,9 @@ import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
-  title: '사업전략팀 OKR 대시보드',
-  description: '분기 OKR 진척도와 회고를 한 페이지에서 관리합니다.',
+  // 브라우저 print 헤더에 들어가는 텍스트 — 영문으로 두어 명조체 회피
+  title: 'OKR Dashboard',
+  description: 'Quarterly OKR tracking dashboard',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

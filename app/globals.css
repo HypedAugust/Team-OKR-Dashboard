@@ -723,10 +723,17 @@ button {
     width: 18px !important;
     height: 18px !important;
   }
-  /* KPT 그리드 4열 강제 */
+  /* KPT 그리드 — 멤버 수에 맞춰 자동 채움 (한쪽 쏠림 방지) */
   .kpt-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 6px !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 8px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  /* KPT 섹션 전체가 한 페이지에 들어가도록 */
+  section:has(.kpt-grid) {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   /* 빈 textarea 자리 보존 안 함 */
