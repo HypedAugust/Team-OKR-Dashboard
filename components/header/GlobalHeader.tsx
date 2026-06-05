@@ -19,7 +19,7 @@ export function GlobalHeader({
       <div className="flex items-center gap-5">
         <Logo height={36} />
         <span className="hidden md:inline text-heading-md text-text-secondary">
-          사업전략팀 OKR
+          사업전략본부 OKR
         </span>
         <div className="no-print">
           <QuarterSelector current={current} quarters={quarters} />
