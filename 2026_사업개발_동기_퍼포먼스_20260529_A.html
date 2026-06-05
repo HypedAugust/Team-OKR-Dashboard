@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2026 사업개발 동기 퍼포먼스</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root {
+    --c-text: #0f172a;
+    --c-muted: #64748b;
+    --c-faint: #cbd5e1;
+    --c-line: #e2e8f0;
+    --c-bg: #ffffff;
+    --c-bg-soft: #f8fafc;
+    --c-26: #16a34a;
+    --c-26-soft: #dcfce7;
+    --c-26-bg: #f0fdf4;
+    --c-26-deep: #15803d;
+    --c-26-darker: #14532d;
+    --c-25: #94a3b8;
+    --c-25-soft: #f1f5f9;
+    --c-down: #dc2626;
+    --c-down-soft: #fef2f2;
+    --c-gold: #ca8a04;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--c-text);
+    background: var(--c-bg);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 14mm 14mm 12mm 14mm;
+    margin: 0 auto;
+    background: var(--c-bg);
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--c-line);
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .header h1 em {
+    color: var(--c-26);
+    font-style: normal;
+    font-weight: 800;
+  }
+  .header .meta {
+    font-size: 10px;
+    color: var(--c-muted);
+  }
+
+  /* Hero metric - 5할 돌파 */
+  .hero {
+    background: linear-gradient(135deg, #15803d 0%, #16a34a 60%, #22c55e 100%);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: 60px;
+    bottom: -60px;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+  }
+  .hero .eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .hero .main-msg {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+  }
+  .hero .sub-msg {
+    font-size: 12.5px;
+    opacity: 0.9;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .hero .hero-stat {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .hero .stat-old {
+    font-size: 13px;
+    opacity: 0.65;
+    text-decoration: line-through;
+    margin-bottom: 2px;
+  }
+  .hero .stat-new {
+    font-size: 44px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .hero .stat-delta {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  /* 4-up KPI */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .kpi-card {
+    border: 1px solid var(--c-line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    background: var(--c-bg);
+  }
+  .kpi-card.featured {
+    background: var(--c-26-bg);
+    border-color: var(--c-26-soft);
+  }
+  .kpi-card.featured-down {
+    background: var(--c-down-soft);
+    border-color: #fee2e2;
+  }
+  .kpi-card .kpi-label {
+    font-size: 9.5px;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .kpi-card .kpi-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .kpi-card .kpi-25 {
+    font-size: 13px;
+    color: var(--c-25);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-card .kpi-arrow {
+    color: var(--c-faint);
+    font-size: 11px;
+  }
+  .kpi-card .kpi-26 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-card.featured .kpi-26 { color: var(--c-26-deep); }
+  .kpi-card.featured-down .kpi-26 { color: var(--c-down); }
+  .kpi-card.neutral .kpi-26 { color: var(--c-text); }
+  .kpi-card .kpi-delta {
+    font-size: 10.5px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .kpi-card.featured .kpi-delta { color: var(--c-26-deep); }
+  .kpi-card.featured-down .kpi-delta { color: var(--c-down); }
+  .kpi-card.neutral .kpi-delta { color: var(--c-26-deep); }
+  .kpi-card .kpi-multi {
+    font-size: 9.5px;
+    color: var(--c-muted);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* Comparison block */
+  .compare-block {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .compare-card {
+    border: 1px solid var(--c-line);
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: var(--c-bg);
+  }
+  .compare-card .title {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  /* Stacked horizontal bar */
+  .bar-line {
+    display: grid;
+    grid-template-columns: 32px 1fr 84px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .bar-line.y25 { opacity: 0.8; }
+  .bar-line .y-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--c-muted);
+  }
+  .bar-line.y26 .y-label {
+    color: var(--c-26-deep);
+  }
+  .bar-line .bar-track {
+    height: 26px;
+    background: var(--c-bg-soft);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-line .bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.01em;
+  }
+  .bar-line.y25 .bar-fill {
+    background: var(--c-25);
+  }
+  .bar-line.y26 .bar-fill {
+    background: linear-gradient(90deg, var(--c-26-deep) 0%, var(--c-26) 100%);
+  }
+  .bar-line .raw {
+    font-size: 10.5px;
+    color: var(--c-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-weight: 600;
+  }
+  .bar-line.y26 .raw {
+    color: var(--c-text);
+    font-weight: 700;
+  }
+
+  /* Achievements list */
+  .achievements {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .achievements li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    align-items: baseline;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 11px;
+    border-bottom: 1px solid var(--c-bg-soft);
+  }
+  .achievements li:last-child { border-bottom: none; }
+  .achievements .num {
+    font-size: 11px;
+    color: var(--c-26-deep);
+    font-weight: 800;
+    text-align: right;
+  }
+  .achievements .name {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+  .achievements .name .status {
+    font-size: 9.5px;
+    color: var(--c-muted);
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  /* Efficiency block */
+  .efficiency {
+    background: var(--c-bg-soft);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    text-align: center;
+  }
+  .efficiency .eff-item .label {
+    font-size: 9.5px;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .efficiency .eff-item .value {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--c-text);
+    letter-spacing: -0.02em;
+  }
+  .efficiency .eff-item .value.win {
+    color: var(--c-26-deep);
+  }
+  .efficiency .eff-item .sub {
+    font-size: 9.5px;
+    color: var(--c-muted);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+  .efficiency .eff-item .sub.compare-25 {
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  /* Footnote */
+  .footnote {
+    margin-top: 16px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--c-line);
+    font-size: 9px;
+    color: var(--c-muted);
+    line-height: 1.6;
+  }
+  .footnote .row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .footnote strong {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+
+  /* Print rules */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  @media print {
+    html, body { background: white; }
+    .page {
+      width: 100%;
+      min-height: auto;
+      padding: 12mm 12mm 10mm 12mm;
+    }
+    .hero, .kpi-card.featured, .kpi-card.featured-down, .efficiency, .bar-line .bar-fill {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1><em>2026</em> 사업개발 동기 퍼포먼스 · vs 2025</h1>
+    <div class="meta">기준일 2026.05.27 · 비교 1.26–5.27 동기 · ㈜일만백만</div>
+  </div>
+
+  <!-- HERO: 5할 돌파 -->
+  <div class="hero">
+    <div class="hero-content">
+      <div>
+        <div class="eyebrow">한 줄 결론</div>
+        <div class="main-msg">
+          26년 동기 선정률<br>
+          <span style="font-weight: 900;">5할 돌파.</span>
+        </div>
+        <div class="sub-msg">
+          25년 셋에 하나 → 26년 다섯에 셋 선정.
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-new">59.3%</div>
+        <div class="stat-delta">25년 대비 +56.5% 향상 (+21.4%p)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-UP KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card featured">
+      <div class="kpi-label">선정률</div>
+      <div class="kpi-value">
+        <span class="kpi-25">37.9%</span>
+        <span class="kpi-arrow">→</span>
+        <span class="kpi-26">59.3%</span>
+      </div>
+      <div class="kpi-delta">+21.4%p ▲</div>
+      <div class="kpi-multi">25년 대비 +56.5% 향상</div>
+    </div>
+    <div class="kpi-card featured-down">
+      <div class="kpi-label">탈락률</div>
+      <div class="kpi-value">
+        <span class="kpi-25">62.1%</span>
+        <span class="kpi-arrow">→</span>
+        <span class="kpi-26">40.7%</span>
+      </div>
+      <div class="kpi-delta">−21.4%p ▼</div>
+      <div class="kpi-multi">25년 대비 34.5% 감소</div>
+    </div>
+    <div class="kpi-card neutral">
+      <div class="kpi-label">잠재 파이프라인</div>
+      <div class="kpi-value">
+        <span class="kpi-25">8건</span>
+        <span class="kpi-arrow">→</span>
+        <span class="kpi-26">11건</span>
+      </div>
+      <div class="kpi-delta">+3건 ▲</div>
+      <div class="kpi-multi">25년 대비 +37.5% 증가</div>
+    </div>
+    <div class="kpi-card neutral">
+      <div class="kpi-label">협약 완료</div>
+      <div class="kpi-value">
+        <span class="kpi-26" style="font-size: 26px;">5건</span>
+      </div>
+      <div class="kpi-delta">26년 동기 신규</div>
+      <div class="kpi-multi">평균 1개월 1건 협약</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON BLOCK -->
+  <div style="margin-bottom: 14px;">
+    <!-- 선정률 막대 비교 (full width) -->
+    <div class="compare-card">
+      <div class="title">선정률 동기 비교</div>
+      <div class="bar-line y25">
+        <span class="y-label">'25</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 63.9%;">37.9%</div>
+        </div>
+        <span class="raw">22 / 58건</span>
+      </div>
+      <div class="bar-line y26">
+        <span class="y-label">'26</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 100%;">59.3%</div>
+        </div>
+        <span class="raw">16 / 27건</span>
+      </div>
+      <div style="margin-top: 10px; padding: 10px 14px; background: var(--c-26-bg); border-radius: 4px; font-size: 11px; color: var(--c-26-darker); font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+        <span>26년 동기 결과 확정 건 다섯 중 셋 이상이 성과로 이어짐</span>
+        <span style="font-size: 13px; font-weight: 800;">25년 대비 +56.5% 향상</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EFFICIENCY -->
+  <div class="efficiency">
+    <div class="eff-item">
+      <div class="label">신청당 성과 효율</div>
+      <div class="value win">2.38건</div>
+      <div class="sub">신청 → 성과 전환 평균</div>
+    </div>
+    <div class="eff-item">
+      <div class="label">카테고리 다각화</div>
+      <div class="value win">6개</div>
+      <div class="sub">지원·OI·R&D·IR·AC·기타</div>
+    </div>
+    <div class="eff-item">
+      <div class="label">결과 확정 속도</div>
+      <div class="value win">4개월</div>
+      <div class="sub">1.26~5.27 사이 27건 처리</div>
+    </div>
+  </div>
+
+  <!-- FOOTNOTE -->
+  <div class="footnote">
+    <div class="row">
+      <div><strong>포함</strong> · 전 카테고리 통합 (지원·OI·R&D·IR·AC·기타·PoC)</div>
+      <div><strong>성과</strong> = 선정·협약 + 사업/이벤트 완료</div>
+      <div><strong>제외</strong> · 드롭 / 이월 선정 / 1.26 이전 마감 / 제출실패</div>
+    </div>
+    <div style="margin-top: 4px;">
+      <strong>SSOT</strong> · 2025 대시보드 pageId 853573647 (v.422) · 2026 대시보드 pageId 1651802815 (v.496) ·
+      <strong>선정률</strong> = (선정 + 협약 + 사업완료) / 결과 확정 건수
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

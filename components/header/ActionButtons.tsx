@@ -6,14 +6,17 @@ import { Button } from '@/components/ui/Button';
 import { NewQuarterModal } from '@/components/modal/NewQuarterModal';
 import { MemberManageModal } from '@/components/modal/MemberManageModal';
 import { DataIO } from './DataIO';
+import { HtmlExport } from './HtmlExport';
 import type { Member } from '@/lib/types';
 
 export function ActionButtons({
   members,
   disabled,
+  quarterName,
 }: {
   members: Member[];
   disabled: boolean;
+  quarterName?: string;
 }) {
   const [openNew, setOpenNew] = useState(false);
   const [openMembers, setOpenMembers] = useState(false);
@@ -25,6 +28,7 @@ export function ActionButtons({
   return (
     <div className="flex items-center gap-2">
       <DataIO />
+      <HtmlExport quarterName={quarterName} />
       <span className="w-px h-5 bg-border-subtle mx-1" />
       <Button variant="ghost" size="sm" onClick={() => setOpenNew(true)}>
         <Plus size={16} />새 분기

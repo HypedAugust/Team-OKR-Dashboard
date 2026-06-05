@@ -31,7 +31,11 @@ export function GlobalHeader({
         )}
       </div>
       <div className="no-print">
-        <ActionButtons members={members} disabled={isReadOnly} />
+        <ActionButtons
+          members={members}
+          disabled={isReadOnly}
+          quarterName={current?.name}
+        />
       </div>
     </header>
   );
